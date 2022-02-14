@@ -1,0 +1,13 @@
+{
+    "type": "mssql",
+    "host": "KUIDOLI",
+    "port": 1433,
+    "username": "sa",
+    "password": "cks1991!",
+    "database": "users",
+    "entities": ["dist/**/*.entity{.ts,.js}"],
+    "extra": {
+        "trustServerCertificate": true
+    },
+    "synchronize": true
+}
