@@ -1,0 +1,13 @@
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+
+@Entity()
+export class Company {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  founder: number;
+
+  @Column()
+  name: string;
+}
