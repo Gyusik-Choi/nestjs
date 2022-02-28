@@ -1,5 +1,7 @@
 # No migrations are pending
 
+### MSSQL
+
 NestJS + TypeORM 으로 migration을 통한 UserAccount 라는 db 테이블 생성을 시도했다.
 
 package.json에 typeorm과 관련해서 CLI 명령어를 수행할 수 있도록 scripts에 추가했다.
@@ -197,6 +199,33 @@ query: COMMIT
 <br>
 
 migration으로 db에 테이블은 생성했으나 이에 대응되는 entity는 어떻게 생성하고 관리해줘야 하는지 아직 공부가 더 필요하다. 직접 entity를 생성하지 않고 자동으로 생성할 수 있다면 좋을 것 같다.
+
+<br>
+
+### MYSQL
+
+MYSQL 에서도 위와 같은 에러가 발생했다.
+
+해결방법은 위와 거의 유사하며 migrations의 경로에서 {} 를 제거해줬다.
+
+변경 전
+
+```json
+// ormconfig.json
+{
+  "migrations": ["./dist/migrations/*{.js}"],
+}
+```
+
+<br>
+
+변경 후
+
+```json
+  "migrations": ["./dist/migrations/*.js"],
+```
+
+
 
 <br>
 
