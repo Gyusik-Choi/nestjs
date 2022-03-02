@@ -1,4 +1,4 @@
-# NestJS - 특정 모듈에 Controller, Service 파일 생성
+# 특정 모듈에 Controller, Service 파일 생성
 
 NestJS CLI 환경에서 새로운 프로젝트를 만들고, Module을 만드는 것은 잘 수행했으나 새로 만든 Module 안에 Controller와 Service 파일을 만드려고 하니 어떻게 해야할지 몰랐다.
 
