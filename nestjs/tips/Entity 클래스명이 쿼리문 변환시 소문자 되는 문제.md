@@ -18,7 +18,7 @@ Entity의 클래스명
 
 Member 클래스가 쿼리문으로 바뀌면서 member로 변환됐다.
 
-![entity small letter 에러](entity small letter 에러.PNG)
+![entity small letter 에러](entity_small_letter_에러.PNG)
 
 <br>
 
