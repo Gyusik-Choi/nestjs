@@ -6,9 +6,9 @@
 
 일반 repository
 
-Cat (entity) + CatsRepository (repository)
+Cat (entity)
 
-imports에서 entity 클래스 명을 기재하고, exports에서는 repository 클래스 명을 기재한다
+imports에서 entity 클래스 명을 기재한다. CatsService에 의존성 주입으로 Repository< Cat >을 주입해준다면 exports에는 CatsService만 기재하면 된다.
 
 ```tsx
 @Module({
@@ -17,7 +17,7 @@ imports에서 entity 클래스 명을 기재하고, exports에서는 repository 
   ],
   controllers: [CatsController],
   providers: [CatsService],
-  exports: [CatsService, CatsRepository],
+  exports: [CatsService],
 })
 ```
 
