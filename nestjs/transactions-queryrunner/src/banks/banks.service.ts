@@ -33,7 +33,7 @@ export class BanksService {
     );
 
     const receiverBalance: number = findReceiver['data']['Balance'];
-    const plusBalance: number = receiverBalance - money;
+    const plusBalance: number = receiverBalance + money;
 
     const queryRunner: QueryRunner = this.connection.createQueryRunner();
     const bankAccountManager: Repository<BankAccount> =
@@ -45,6 +45,7 @@ export class BanksService {
     try {
       await this.changeBalance(bankAccountManager, sender, minusBalance);
       await this.changeBalance(bankAccountManager, receiver, plusBalance);
+      await queryRunner.commitTransaction();
     } catch (err) {
       await queryRunner.rollbackTransaction();
     } finally {

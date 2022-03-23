@@ -1,9 +1,13 @@
 # NestJS Transactions
 ## QueryRunner
 
+### 환경
+
 NestJS + TypeORM + MYSQL 조합에서 트랜잭션을 실습해보려고 한다.
 
 <br>
+
+### Connection -> DataSource
 
 TypeORM이 2022년 3월 17일을 기점으로 큰 변화가 있었다. 
 
@@ -75,9 +79,30 @@ export class AService {
 
 TypeORM의 자세한 변화는 [이곳](https://github.com/typeorm/typeorm/releases/tag/0.3.0)에서 확인할 수 있다.
 
+<br>
 
+### Lock wait timeout exceeded; try restarting transaction
+
+트랜잭션 후에 결과를 확인하기 위해 select 문으로 결과를 확인하니 원하는 결과가 나오지 않았다. 서버 코드에 잘못 작성한게 있어서 수정한 후에 DB의 내용을 원래데로 돌리기 위해 update 문을 수행하는데 한참이 지나도 쿼리가 실행중(영어로)이라는 표시만 나오고 결과가 나오지 않았다.
+
+한참 후에 "Lock wait timeout exceeded; try restarting transaction" 이런 에러가 발생해서 구글링을 하니 트랜잭션과 관련된 문제라는 것을 알게 됐다.
+
+<br>
+
+```mysql
+select * from information_schema.INNODB_TRX;
+```
+
+해당 명령어를 통해 살펴보니 running 중이라고 표시된 내용이 있어서 이를 kill 하려고 했으나 제대로 되지 않아서 결국 mysql을 종료시키고 다시 시작한 후에 다시 트랜잭션을 수행하고 update 문을 수행하니 쿼리가 완료되지 못했다.
+
+결론적으로는 트랜잭션을 commit 하지 않아서 생긴 문제였다. 트랜잭션 후에 commit을 수행하니 해결됐다.
+
+<br>
 
 <참고>
 
 https://github.com/typeorm/typeorm/releases/tag/0.3.0
 
+https://www.popit.kr/mysql-lock-상황-문제-해결/
+
+https://kapentaz.github.io/mysql/Lock-wait-timeout-exceeded;-try-restarting-transaction-발생-이유와-해결/
