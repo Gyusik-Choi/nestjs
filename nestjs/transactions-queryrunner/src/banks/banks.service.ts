@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, QueryRunner, Repository } from 'typeorm';
+import { Connection, QueryRunner, Repository } from 'typeorm';
 import { ResponseInterface } from './common/interfaces/response.interface';
 import { SendMoneyDTO } from './dto/send-money.dto';
 import { BankAccount } from './entities/bank-account.entity';
@@ -15,7 +15,7 @@ export class BanksService {
     @InjectRepository(BankAccount)
     private readonly bankAccountRepository: Repository<BankAccount>,
 
-    private readonly dataSource: DataSource,
+    private readonly connection: Connection,
   ) {}
 
   async sendMoney(data: SendMoneyDTO) {
@@ -29,7 +29,7 @@ export class BanksService {
       receiver,
     );
 
-    const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
+    const queryRunner: QueryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
