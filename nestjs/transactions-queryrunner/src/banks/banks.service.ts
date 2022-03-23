@@ -25,16 +25,26 @@ export class BanksService {
       sender,
     );
 
+    const senderBalance: number = findSender['data']['Balance'];
+    const minusBalance: number = senderBalance - money;
+
     const findReceiver: ResponseInterface<BankAccount> = await this.findUser(
       receiver,
     );
 
+    const receiverBalance: number = findReceiver['data']['Balance'];
+    const plusBalance: number = receiverBalance - money;
+
     const queryRunner: QueryRunner = this.connection.createQueryRunner();
+    const bankAccountManager: Repository<BankAccount> =
+      queryRunner.manager.getRepository(BankAccount);
+
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
-      //
+      await this.changeBalance(bankAccountManager, sender, minusBalance);
+      await this.changeBalance(bankAccountManager, receiver, plusBalance);
     } catch (err) {
       await queryRunner.rollbackTransaction();
     } finally {
@@ -62,7 +72,22 @@ export class BanksService {
       };
     } catch (err) {
       // exception-filter로 처리
+      // try 의 throw new NotFoundException() 을 처리
+      if (err['response']['message'] == 'Not Found') {
+        throw new NotFoundException('해당하는 사용자가 없습니다', '노 해당');
+      }
+
       throw new InternalServerErrorException(500, err);
     }
+  }
+
+  async changeBalance(
+    manager: Repository<BankAccount>,
+    member: number,
+    balance: number,
+  ) {
+    await manager.update(member, {
+      Balance: balance,
+    });
   }
 }
