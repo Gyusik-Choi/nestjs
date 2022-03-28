@@ -1,6 +1,6 @@
 import { IsNumber, IsString } from 'class-validator';
 
-export class CreaetCompanyDTO {
+export class CreateCompanyDTO {
   @IsNumber()
   founder: number;
 

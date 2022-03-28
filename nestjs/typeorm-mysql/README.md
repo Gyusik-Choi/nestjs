@@ -4,9 +4,13 @@ TypeORM 으로 MySQL 과 연결하여 두 테이블 간의 JOIN 을 통해 데�
 
 <br>
 
+### 테스트 코드 에러
+
 테스트 코드를 작성해보려 했으나 기본 단위 테스트 실행에서부터 에러가 발생해서 아직 해결하지 못한 상태다.
 
 <br>
+
+### 테스트 코드 에러 해결
 
 위에서 언급한 테스트 코드 에러를 해결했다. 주 원인은 테스트 코드에도 의존성을 실행 코드와 마찬가지로 구성해주었어야 했는데 그렇게 하지 못했다.
 
@@ -22,6 +26,17 @@ TypeORM 으로 MySQL 과 연결하여 두 테이블 간의 JOIN 을 통해 데�
 
 <br>
 
+### 특정 파일만 테스트
+
+작성한 모든 테스트 코드 파일들을 테스트 하는게 아니라 특정 파일만 테스트 하고 싶다면 파일의 경로를 추가로 입력해주면 된다.
+
+```
+npm run test 'path'
+ex> npm run test src/users/users.spec.ts
+```
+
+<br>
+
 <참고>
 
 https://stackoverflow.com/questions/63865678/nestjs-test-suite-failed-to-run-cannot-find-module-src-article-article-entity
@@ -29,3 +44,6 @@ https://stackoverflow.com/questions/63865678/nestjs-test-suite-failed-to-run-can
 https://jhyeok.com
 
 https://www.daleseo.com/jest-fn-spy-on/
+
+https://stackoverflow.com/questions/57045201/run-single-test-of-a-specific-test-suite-in-jest
+

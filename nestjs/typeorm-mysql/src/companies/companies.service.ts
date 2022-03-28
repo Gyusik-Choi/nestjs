@@ -6,7 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 // 해결
 import { UserAccount } from '../users/entities/user.entity';
 import { Repository } from 'typeorm';
-import { CreaetCompanyDTO } from './dto/create-company.dto';
+import { CreateCompanyDTO } from './dto/create-company.dto';
 import { Company } from './entities/company.entity';
 
 @Injectable()
@@ -26,7 +26,7 @@ export class CompaniesService {
     return allCompanies;
   }
 
-  async createCompany(companyData: CreaetCompanyDTO) {
+  async createCompany(companyData: CreateCompanyDTO) {
     // 방법 1
     return this.companyRepository.save(companyData);
 
