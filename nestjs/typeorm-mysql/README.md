@@ -2,6 +2,30 @@
 
 TypeORM 으로 MySQL 과 연결하여 두 테이블 간의 JOIN 을 통해 데이터를 추출해보는 연습을 해보았다.
 
+<br>
+
 테스트 코드를 작성해보려 했으나 기본 단위 테스트 실행에서부터 에러가 발생해서 아직 해결하지 못한 상태다.
 
-우선 package.json의 jest 설정에서 문제가 있는듯 하다. 계속 해결을 시도해볼 계획이다.
+<br>
+
+위에서 언급한 테스트 코드 에러를 해결했다. 주 원인은 테스트 코드에도 의존성을 실행 코드와 마찬가지로 구성해주었어야 했는데 그렇게 하지 못했다.
+
+그리고 entity 를 찾지 못하는 에러도 있었으나 이는 [몇가지 방법](*https://stackoverflow.com/questions/63865678/nestjs-test-suite-failed-to-run-cannot-find-module-src-article-article-entity*)이 존재했는데 여기서는 위치를 상대 경로로 바꿔서 해결했다.
+
+<br>
+
+테스트 코드에서 의존성을 구성할때 repository의 경우 실제 DB에 접근하지 않고 테스트를 하기 위해 [모킹(Mocking)](https://www.daleseo.com/jest-fn-spy-on/)을 활용했다.
+
+<br>
+
+현재 시점에서는 테스트를 아직 제대로 진행하지 못했지만 그간 기본 테스트 코드에서 발생한 에러 때문에 테스트를 제대로 시작할 수도 없었던 상황에서 벗어났다는 것에 의의를 두고 싶다.
+
+<br>
+
+<참고>
+
+https://stackoverflow.com/questions/63865678/nestjs-test-suite-failed-to-run-cannot-find-module-src-article-article-entity
+
+https://jhyeok.com
+
+https://www.daleseo.com/jest-fn-spy-on/

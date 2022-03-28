@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserAccount } from 'src/users/entities/user.entity';
+// import { UserAccount } from 'src/users/entities/user.entity';
+// 에러 => "Cannot find module 'src/users/entities/user.entity' from 'companies/companies.service.ts"
+// https://stackoverflow.com/questions/63865678/nestjs-test-suite-failed-to-run-cannot-find-module-src-article-article-entity
+// 해결
+import { UserAccount } from '../users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreaetCompanyDTO } from './dto/create-company.dto';
 import { Company } from './entities/company.entity';
@@ -14,16 +18,18 @@ export class CompaniesService {
 
   async findAllCompanies(): Promise<Company[]> {
     // https://velog.io/@hkja0111/NestJS-08-TypeORM-QueryBuilder
-    const allCompanies = await this.companyRepository
-      .createQueryBuilder()
-      .getMany();
+    // const allCompanies = await this.companyRepository
+    //   .createQueryBuilder()
+    //   .getMany();
+    const allCompanies = await this.companyRepository.find();
 
     return allCompanies;
   }
 
   async createCompany(companyData: CreaetCompanyDTO) {
     // 방법 1
-    // return this.companyRepository.save(companyData);
+    return this.companyRepository.save(companyData);
+
     // 방법 2
     // const connection = getConnection();
     // await connection
@@ -32,13 +38,14 @@ export class CompaniesService {
     //   .into(Company)
     //   .values(companyData)
     //   .execute();
+
     // 방법 3
-    this.companyRepository
-      .createQueryBuilder()
-      .insert()
-      .into(Company)
-      .values(companyData)
-      .execute();
+    // this.companyRepository
+    //   .createQueryBuilder()
+    //   .insert()
+    //   .into(Company)
+    //   .values(companyData)
+    //   .execute();
   }
 
   async getCompaniesOfFounder(founderId: number) {
