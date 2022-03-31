@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { bindCallback } from 'rxjs';
 import { Repository } from 'typeorm';
 import { UserAccount } from './entities/user.entity';
 import { UsersService } from './users.service';
@@ -10,20 +9,6 @@ const mockUsersRepository = () => ({
   // https://velog.io/@baik9261/Nest-JS-JESTUnit-Test
   save: jest.fn(),
   find: jest.fn(),
-  // find: jest.fn().mockResolvedValue([
-  //   {
-  //     id: 1,
-  //     name: 'Bill',
-  //   },
-  //   {
-  //     id: 2,
-  //     name: 'Steve',
-  //   },
-  //   {
-  //     id: 3,
-  //     name: 'Elon',
-  //   },
-  // ]),
   findOne: jest.fn(),
 });
 
@@ -58,13 +43,6 @@ describe('UsersService', () => {
     expect(usersRepository).toBeDefined();
   });
 
-  // describe('find', () => {
-  //   it('should return all users', async () => {
-  //     const users = await usersRepository.find();
-  //     expect(users.length).toBeGreaterThanOrEqual(3);
-  //   });
-  // });
-
   describe('save', () => {
     it('should create new user', async () => {
       const user = { firstName: 'Bill', lastName: 'Gates', isActive: true };
@@ -74,6 +52,46 @@ describe('UsersService', () => {
 
       expect(usersRepository.save).toHaveBeenCalledTimes(1);
       expect(result).toEqual(user);
+    });
+  });
+
+  describe('find', () => {
+    it('should find users', async () => {
+      usersRepository.find.mockResolvedValue([
+        {
+          id: 1,
+          name: 'Bill',
+        },
+        {
+          id: 2,
+          name: 'Steve',
+        },
+        {
+          id: 3,
+          name: 'Elon',
+        },
+      ]);
+
+      const result = await service.findAllUsers();
+
+      expect(result.length).toBe(3);
+      expect(result[0]['id']).toBe(1);
+    });
+  });
+
+  describe('findOne', () => {
+    it('should find one user', async () => {
+      const mockedUser = {
+        id: 1,
+        firstName: 'Steve',
+        lastName: 'Jobs',
+        isActive: true,
+      };
+
+      usersRepository.findOne.mockResolvedValue(mockedUser);
+      const user = await service.findUser(1);
+
+      expect(user).toEqual(mockedUser);
     });
   });
 });

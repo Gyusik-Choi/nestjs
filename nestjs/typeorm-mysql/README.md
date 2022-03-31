@@ -32,7 +32,7 @@ TypeORM 으로 MySQL 과 연결하여 두 테이블 간의 JOIN 을 통해 데�
 
 ```
 npm run test 'path'
-ex> npm run test src/users/users.spec.ts
+ex> npm run test src/users/users.service.spec.ts
 ```
 
 <br>
