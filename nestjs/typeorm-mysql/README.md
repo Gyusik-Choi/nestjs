@@ -37,6 +37,14 @@ ex> npm run test src/users/users.spec.ts
 
 <br>
 
+### returning a Promise from "describe" is not supported. Tests must be defined synchronously.
+
+describe 만 작성하고 안에 it 을 정의하고 async 함수로 작성하지 않아서 에러 발생했다.
+
+describe 를 async 로 작성한다고 해결되는게 아니다.
+
+<br>
+
 <참고>
 
 https://stackoverflow.com/questions/63865678/nestjs-test-suite-failed-to-run-cannot-find-module-src-article-article-entity
