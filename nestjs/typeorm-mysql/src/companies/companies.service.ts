@@ -60,6 +60,12 @@ export class CompaniesService {
       .where('company.founder = :founderId', { founderId: founderId })
       .getMany();
 
+    // 특정 컬럼만 select 하고 싶을 경우
+    // .innerJoin(UserAccount, 'user', 'company.founder = user.id')
+    // .select(['company.name'])
+    // .where('company.founder = :founderId', { founderId: founderId })
+    // .getMany();
+
     return companies;
   }
 }
