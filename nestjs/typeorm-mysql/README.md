@@ -47,6 +47,8 @@ describe 를 async 로 작성한다고 해결되는게 아니다.
 
 <참고>
 
+https://github.com/Gyusik-Choi/TypeScript/tree/main/nestjs/typeorm-mysql
+
 https://stackoverflow.com/questions/63865678/nestjs-test-suite-failed-to-run-cannot-find-module-src-article-article-entity
 
 https://jhyeok.com

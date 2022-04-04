@@ -7,6 +7,11 @@ import { Company } from './entities/company.entity';
 const mockCompanyRepository = () => ({
   save: jest.fn(),
   find: jest.fn(),
+  createQueryBuilder: jest.fn().mockReturnValue({
+    innerJoinAndSelect: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    getMany: jest.fn().mockReturnThis(),
+  }),
 });
 
 type MockRepository<T> = Partial<Record<keyof Repository<T>, jest.Mock>>;
