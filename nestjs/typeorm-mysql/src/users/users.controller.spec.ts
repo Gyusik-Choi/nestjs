@@ -15,6 +15,7 @@ type MockRepository<T> = Partial<Record<keyof Repository<T>, jest.Mock>>;
 
 describe('UsersController', () => {
   let controller: UsersController;
+  let service: UsersService;
   let usersRepository: MockRepository<UserAccount>;
 
   beforeEach(async () => {
@@ -30,6 +31,7 @@ describe('UsersController', () => {
     }).compile();
 
     controller = module.get<UsersController>(UsersController);
+    service = module.get<UsersService>(UsersService);
     usersRepository = module.get<MockRepository<UserAccount>>(
       getRepositoryToken(UserAccount)
     );
@@ -37,5 +39,21 @@ describe('UsersController', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
+  });
+
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
+
+  it('should be defined', () => {
+    expect(usersRepository).toBeDefined();
+  });
+
+  describe('findAllUsers', () => {
+    it('it is called as get method', async () => {
+      const serviceCall = jest.spyOn(service, 'findAllUsers');
+      await controller.findAllUsers();
+      expect(serviceCall).toBeCalledTimes(1);
+    });
   });
 });

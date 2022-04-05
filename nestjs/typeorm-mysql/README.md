@@ -45,13 +45,52 @@ describe 를 async 로 작성한다고 해결되는게 아니다.
 
 <br>
 
-### service 에 작성한 메소드의 테스트 진행
+### service 테스트
 
 service의 메소드들을 테스트하면서 mocking을 하는 방법이나 결과 값을 어떻게 설정하고 테스트 해야하는지, querybuilder는 어떻게 mocking하고 테스트해야 하는지 등을 경험해볼 수 있었다.
 
 테스트 코드를 작성하는게 아직 익숙하지 않고 방법도 잘 몰라서 구글링에 많이 의존했다.
 
 controller 테스트 방법도 학습하여 추가적으로 진행해보고 싶다.
+
+<br>
+
+### controller 테스트
+
+무작정 controller를 테스트 해보려 했는데 (역시나) 에러가 발생했다.
+
+```javascript
+describe('findAllUsers', () => {
+  it('it is called as get method', async () => {
+    const a = await controller.findAllUsers();
+    expect(a).toHaveBeenCalled();
+  });
+});
+```
+
+<br>
+
+위의 코드는 아래와 같은 에러를 발생시킨다.
+
+```
+expect(received).toBeCalled()
+Matcher error: received value must be a mock or spy function
+Received has value: undefined
+```
+
+<br>
+
+에러 메시지에 나와있듯이 expect에 spy function을 넣으니 해결됐다.
+
+```javascript
+describe('findAllUsers', () => {
+  it('it is called as get method', async () => {
+    const serviceCall = jest.spyOn(service, 'findAllUsers');
+    await controller.findAllUsers();
+    expect(serviceCall).toBeCalledTimes(1);
+  });
+});
+```
 
 <br>
 
