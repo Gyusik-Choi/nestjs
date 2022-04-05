@@ -45,9 +45,23 @@ describe 를 async 로 작성한다고 해결되는게 아니다.
 
 <br>
 
+### service 에 작성한 메소드의 테스트 진행
+
+service의 메소드들을 테스트하면서 mocking을 하는 방법이나 결과 값을 어떻게 설정하고 테스트 해야하는지, querybuilder는 어떻게 mocking하고 테스트해야 하는지 등을 경험해볼 수 있었다.
+
+테스트 코드를 작성하는게 아직 익숙하지 않고 방법도 잘 몰라서 구글링에 많이 의존했다.
+
+controller 테스트 방법도 학습하여 추가적으로 진행해보고 싶다.
+
+<br>
+
 <참고>
 
-https://github.com/Gyusik-Choi/TypeScript/tree/main/nestjs/typeorm-mysql
+https://velog.io/@1yongs_/NestJS-Testing-Jest
+
+https://velog.io/@hkja0111/NestJS-10-Unit-Test-JEST
+
+https://velog.io/@hkja0111/NestJS-11-Unit-Test-QueryBuilder
 
 https://stackoverflow.com/questions/63865678/nestjs-test-suite-failed-to-run-cannot-find-module-src-article-article-entity
 
