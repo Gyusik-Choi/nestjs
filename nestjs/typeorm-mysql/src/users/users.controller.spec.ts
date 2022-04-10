@@ -56,4 +56,38 @@ describe('UsersController', () => {
       expect(serviceCall).toBeCalledTimes(1);
     });
   });
+
+  describe('findUser', () => {
+    it('it is called as get method', async () => {
+      const serviceCall = jest.spyOn(service, 'findUser');
+      await controller.findUser(1);
+      expect(serviceCall).toBeCalledTimes(1);
+    });
+
+    // https://leocode.com/development/testing-node-with-jest/
+    it('it should return something', async () => {
+      const result = {
+        id: 1,
+        firstName: 'Bill',
+        lastName: 'Gates',
+        isActive: true,
+      };
+      jest.spyOn(controller, 'findUser').mockResolvedValue(result);
+      expect(await controller.findUser(1)).toBe(result);
+    });
+  });
+
+  describe('createUser', () => {
+    it('it should create user', async () => {
+      const user = {
+        id: 5,
+        firstName: 'Nest',
+        lastName: 'JS',
+        isActive: true,
+      };
+
+      jest.spyOn(controller, 'createUser').mockResolvedValue(user);
+      expect(await controller.createUser(user)).toBe(user);
+    });
+  });
 });

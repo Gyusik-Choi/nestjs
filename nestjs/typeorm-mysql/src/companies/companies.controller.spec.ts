@@ -14,6 +14,7 @@ type MockRepository<T> = Partial<Record<keyof Repository<T>, jest.Mock>>;
 
 describe('CompaniesController', () => {
   let controller: CompaniesController;
+  let service: CompaniesService;
   let companyRepository: MockRepository<Company>;
 
   beforeEach(async () => {
@@ -29,6 +30,7 @@ describe('CompaniesController', () => {
     }).compile();
 
     controller = module.get<CompaniesController>(CompaniesController);
+    service = module.get<CompaniesService>(CompaniesService);
     companyRepository = module.get<MockRepository<Company>>(
       getRepositoryToken(Company)
     );
@@ -36,5 +38,13 @@ describe('CompaniesController', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
+  });
+
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
+
+  it('should be defined', () => {
+    expect(companyRepository).toBeDefined();
   });
 });
