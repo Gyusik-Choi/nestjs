@@ -50,7 +50,7 @@ describe('UsersController', () => {
   });
 
   describe('findAllUsers', () => {
-    it('it is called as get method', async () => {
+    it('it should be called', async () => {
       const serviceCall = jest.spyOn(service, 'findAllUsers');
       await controller.findAllUsers();
       expect(serviceCall).toBeCalledTimes(1);
@@ -58,7 +58,7 @@ describe('UsersController', () => {
   });
 
   describe('findUser', () => {
-    it('it is called as get method', async () => {
+    it('it should be called', async () => {
       const serviceCall = jest.spyOn(service, 'findUser');
       await controller.findUser(1);
       expect(serviceCall).toBeCalledTimes(1);

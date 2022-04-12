@@ -8,6 +8,11 @@ import { Company } from './entities/company.entity';
 const mockCompanyRepository = () => ({
   save: jest.fn(),
   find: jest.fn(),
+  createQueryBuilder: jest.fn().mockReturnValue({
+    innerJoinAndSelect: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    getMany: jest.fn().mockReturnThis(),
+  }),
 });
 
 type MockRepository<T> = Partial<Record<keyof Repository<T>, jest.Mock>>;
@@ -46,5 +51,56 @@ describe('CompaniesController', () => {
 
   it('should be defined', () => {
     expect(companyRepository).toBeDefined();
+  });
+
+  describe('findAllCompanies', () => {
+    it('it should be called', async () => {
+      const serviceCall = jest.spyOn(service, 'findAllCompanies');
+      await controller.findAllCompanies();
+      expect(serviceCall).toBeCalled();
+    });
+
+    it('it should return something', async () => {
+      const company = [
+        {
+          id: 1,
+          founder: 1,
+          name: 'microsoft',
+        },
+      ];
+
+      jest.spyOn(controller, 'findAllCompanies').mockResolvedValue(company);
+      expect(await controller.findAllCompanies()).toBe(company);
+    });
+  });
+
+  describe('createCompany', () => {
+    it('it should create company', async () => {
+      const company = {
+        id: 1,
+        founder: 1,
+        name: 'microsoft',
+      };
+
+      jest.spyOn(controller, 'createCompany').mockResolvedValue(company);
+      expect(await controller.createCompany(company)).toEqual(company);
+    });
+  });
+
+  describe('getFounderOfCompany', () => {
+    it('it should find Founder by id', async () => {
+      const company = {
+        id: 1,
+        founder: 1,
+        name: 'microsoft',
+      };
+
+      jest
+        .spyOn(companyRepository.createQueryBuilder(), 'getMany')
+        .mockResolvedValue(company);
+
+      const result = await controller.getFounderOfCompany(1);
+      expect(result).toEqual(company);
+    });
   });
 });
