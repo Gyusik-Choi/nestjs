@@ -125,7 +125,8 @@ export class AuthService {
 
     if (userExistData === null) {
       console.log(userExistError);
-      throw new BadRequestException();
+      // throw new BadRequestException();
+      return false;
     }
 
     const userID: number = userExistData.id;
@@ -137,7 +138,8 @@ export class AuthService {
     );
 
     if (isPasswordMatch === false) {
-      throw new BadRequestException();
+      // throw new BadRequestException();
+      return false;
     }
 
     // https://www.youtube.com/watch?v=c-84CzCEaPs (10분 30초 ~)
@@ -148,6 +150,8 @@ export class AuthService {
     // saveUninitialized 가 false 인 상태에서
     // session 객체를 수정하지 않으면
     // sessionID 는 매번 요청때 마다 바뀐다
+    console.log(request.session);
+    console.log(request.sessionID);
     request.session['isAuthenticated'] = true;
     request.session['userID'] = userID;
     return true;
