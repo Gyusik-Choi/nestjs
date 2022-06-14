@@ -6,16 +6,16 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  // app.use(session(sessionOptions));
+
   const options = {
     host: process.env.DB_HOST,
     port: 3306,
-    user: process.env.DB_USER,
+    user: 'root',
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
     clearExpired: true,
     checkExpirationInterval: 30000,
-    expiration: 60000,
+    expiration: 30000,
   };
 
   const MySQLStore = sessionMySQLStore(session);
@@ -27,9 +27,10 @@ async function bootstrap() {
     resave: false,
     saveUninitialized: false,
     cookie: {
-      maxAge: 60000,
+      maxAge: 30000,
     },
   };
+
   // const options = {
   //   host: 'localhost',
   //   port: 3306,
@@ -54,7 +55,7 @@ async function bootstrap() {
   // };
 
   app.use(session(sessionOptions));
-  app.enableCors();
+  // app.enableCors();
 
   await app.listen(3000);
 }

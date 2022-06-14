@@ -60,6 +60,8 @@ Error: ER_ACCESS_DENIED_ERROR: Access denied for user 'user'@'localhost' (using 
 
 위의 두 에러를 해결하는데 오래 걸렸다. 결국 원인은 .env 에 작성한 내용을 제대로 불러오지 못한 문제였다. .env에 작성한 내용을 불러와서 사용하지 않고 직접 입력을 하니 문제가 사라졌다.
 
+.env와 관련해서 파악한 문제는 우선 key, value 형태로 .env 파일을 작성하게 되는데 value를 ' ' 를 써서 작성했다. 예를 들어 벨류 라고 적어야 하는데, '벨류'라고 적었다.
+
 <br>
 
 <참고>

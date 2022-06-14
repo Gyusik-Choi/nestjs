@@ -6,11 +6,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forRoot(),
-    ConfigModule.forRoot({ isGlobal: true }),
-    AuthModule,
-  ],
+  imports: [TypeOrmModule.forRoot(), ConfigModule.forRoot(), AuthModule],
   controllers: [AppController],
   providers: [AppService],
 })
