@@ -35,7 +35,6 @@ export class AuthController {
   guardTest(@Req() req: Request, @Session() userSession: Record<string, any>) {
     console.log(req.session);
     console.log(userSession.id);
-    console.log(userSession.sessionID);
     return true;
   }
 }
