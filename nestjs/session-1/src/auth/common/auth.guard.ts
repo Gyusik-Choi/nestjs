@@ -5,8 +5,8 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Sessions } from 'src/entities/session.entity';
-import { UserAccount } from 'src/entities/userAccount.entity';
+import { Sessions } from '../../entities/session.entity';
+import { UserAccount } from '../../entities/userAccount.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
