@@ -33,9 +33,22 @@ describe('AuthService', () => {
     }).compile();
 
     service = module.get<AuthService>(AuthService);
+    userAccountRepository = module.get<MockRepository<UserAccount>>(
+      getRepositoryToken(UserAccount),
+    );
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  it('should be defined', () => {
+    expect(userAccountRepository).toBeDefined();
+  });
+
+  describe('signUp', () => {
+    it('should create new user', async () => {
+      //
+    });
   });
 });
