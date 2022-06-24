@@ -51,4 +51,40 @@ describe('AuthService', () => {
       //
     });
   });
+
+  describe('isEmailExist', () => {
+    it('should know wheter user exists', async () => {
+      //
+    });
+  });
+
+  describe('isEmail', () => {
+    it('should know wheter email is valid', async () => {
+      //
+    });
+  });
+
+  describe('isPasswordValidate', () => {
+    it('should know wheter password is valid', async () => {
+      //
+    });
+  });
+
+  describe('saveUser', () => {
+    it('should save user', async () => {
+      //
+    });
+  });
+
+  describe('signIn', () => {
+    it('should signIn', async () => {
+      //
+    });
+  });
+
+  describe('userExist', () => {
+    it('should know whether user exists', async () => {
+      //
+    });
+  });
 });
