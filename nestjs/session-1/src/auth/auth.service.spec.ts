@@ -1,10 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { UserAccount } from '../entities/userAccount.entity';
 import { Repository } from 'typeorm';
+import { UserAccount } from '../entities/userAccount.entity';
 import { AuthService } from './auth.service';
+import * as bcrypt from 'bcrypt';
 
 const mockUsersRepository = () => ({
+  // https://velog.io/@1yongs_/NestJS-Testing-Jest
   // https://velog.io/@baik9261/Nest-JS-JESTUnit-Test
   signUp: jest.fn(),
   isEmailExist: jest.fn(),
@@ -48,7 +50,18 @@ describe('AuthService', () => {
 
   describe('signUp', () => {
     it('should create new user', async () => {
-      //
+      const password = 'Abcde12345!';
+      const hashedPassword: string = await bcrypt.hash(password, 10);
+
+      const userData = {
+        email: 'bill@ms.com',
+        password: hashedPassword,
+      };
+
+      userAccountRepository.save.mockResolvedValue(userData);
+      const result = await service.signUp(userData);
+      console.log(result);
+      expect(userAccountRepository.save).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -60,13 +73,33 @@ describe('AuthService', () => {
 
   describe('isEmail', () => {
     it('should know wheter email is valid', async () => {
-      //
+      const email = 'bill@ms.com';
+      const isEmailResult: boolean = service.isEmail(email);
+
+      expect(isEmailResult).toBeTruthy;
+
+      const wrongEmail = 'bill';
+      const isEmailResult2: boolean = service.isEmail(wrongEmail);
+
+      expect(isEmailResult2).toBeFalsy;
     });
   });
 
   describe('isPasswordValidate', () => {
     it('should know wheter password is valid', async () => {
-      //
+      const wrondPassword1 = '12345';
+      const wrondPassword2 = 'abcde';
+      const wrondPassword3 = '12345abcde';
+      const wrondPassword4 = '12345abcde!';
+
+      expect(wrondPassword1).toBeFalsy;
+      expect(wrondPassword2).toBeFalsy;
+      expect(wrondPassword3).toBeFalsy;
+      expect(wrondPassword4).toBeFalsy;
+
+      const password = 'Abcde12345!';
+
+      expect(password).toBeTruthy;
     });
   });
 
