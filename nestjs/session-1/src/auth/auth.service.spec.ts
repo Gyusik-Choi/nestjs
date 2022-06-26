@@ -9,6 +9,7 @@ const mockUsersRepository = async () => ({
   // https://velog.io/@1yongs_/NestJS-Testing-Jest
   // https://velog.io/@baik9261/Nest-JS-JESTUnit-Test
   save: jest.fn(),
+  findOne: jest.fn(),
 });
 
 type MockRepository<T> = Partial<Record<keyof Repository<T>, jest.Mock>>;
@@ -52,11 +53,14 @@ describe('AuthService', () => {
         password: hashedPassword,
       };
 
-      // save.mockResolvedValue
+      // save 는 typeorm 의 repository 에서 제공하는 함수가 아니라
+      // jest 에서 제공하는 mockResolvedValue 를 사용할 수 있도록
+      // mocking 할 repository 의 함수로 정의해줘야 한다
       userAccountRepository.save.mockResolvedValue(userData);
       const result = await service.saveUser(userData);
-      console.log(result);
+
       expect(userAccountRepository.save).toHaveBeenCalledTimes(1);
+      expect(result).toEqual([null, userData]);
     });
   });
 
@@ -100,7 +104,16 @@ describe('AuthService', () => {
 
   describe('saveUser', () => {
     it('should save user', async () => {
-      //
+      const password = 'Abcde12345!';
+      const hashedPassword: string = await bcrypt.hash(password, 10);
+
+      const userData = {
+        email: 'bill@ms.com',
+        password: hashedPassword,
+      };
+
+      //https://stackoverflow.com/questions/55232833/how-to-test-if-a-void-async-function-was-successful-with-jest
+      expect(await service.saveUser(userData)).resolves.not.toThrow;
     });
   });
 
@@ -112,7 +125,16 @@ describe('AuthService', () => {
 
   describe('userExist', () => {
     it('should know whether user exists', async () => {
-      //
+      userAccountRepository.findOne.mockResolvedValue({
+        email: 'bill@ms.com',
+        password: 'Abcde12345!',
+      });
+
+      const email = 'bill@ms.com';
+      const serviceResult = await service.userExist(email);
+      const mockRespositoryResult = await userAccountRepository.findOne(email);
+
+      expect(serviceResult[1]).toEqual(mockRespositoryResult);
     });
   });
 });
