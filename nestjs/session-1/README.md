@@ -64,6 +64,59 @@ Error: ER_ACCESS_DENIED_ERROR: Access denied for user 'user'@'localhost' (using 
 
 <br>
 
+### 테스트 코드
+
+#### auth.service.spec
+
+- signUp 에러
+
+```
+TypeError: Cannot read properties of undefined (reading 'mockResolvedValue')
+```
+
+
+
+```tsx
+userAccountRepository.save.mockResolvedValue(userData);
+// 이 코드에서 위의 mockResolvedValue 를 찾을 수 없다는 에러가 발생했다.
+// 원인은 save 함수를 mocking 한 repository 에 정의하지 않아서다
+```
+
+
+
+```tsx
+const mockUsersRepository = async () => ({
+  save: jest.fn(),
+});
+```
+
+mocking 한 repository 라서 save 함수를 mockUserRepository 객체에 미리 선언해두지 않아도 vs code 에서 자동 완성으로 추천은 뜨지만 실제로 동작은 되지 않는다. 왜냐하면 선언하지 않으면 save 함수가 실제 repository 의 함수로 동작을 하려하기 때문에 mockResolvedValue 라는 프로퍼티를 갖고 있지 않기 때문이다. mockResolvedValue 라는 jest 에서 제공해주는 프로퍼티를 사용하려면 mockResolvedValue 를 사용할 jest 의 함수를 미리 선언을 해줘야 사용 가능하다.
+
+<br>
+
+그리고 한 가지 잘못 이해한점이 있었다. service 에서 사용하는 함수들을 mockUserRepository 에 정의하려 했던 점이다.
+
+```tsx
+const mockUsersRepository = async () => ({
+	signUp: jest.fn(),
+});
+```
+
+mockUserRepository 에 정의하는 함수들은 repository 에서 사용할 함수를 적는 것인데 service 에서 사용하는 함수를 적으려 한게 잘못된 접근이었다.
+
+```tsx
+const mockUsersRepository = async () => ({
+	// signUp: jest.fn(),
+  // signUp 은 service 에서 사용하는 것이다
+  // 여기다 적는게 아니다
+  save: jest.fn(),
+});
+```
+
+
+
+
+
 <참고>
 
 https://hak0205.tistory.com/63

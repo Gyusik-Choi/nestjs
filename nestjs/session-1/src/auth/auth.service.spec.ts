@@ -5,16 +5,10 @@ import { UserAccount } from '../entities/userAccount.entity';
 import { AuthService } from './auth.service';
 import * as bcrypt from 'bcrypt';
 
-const mockUsersRepository = () => ({
+const mockUsersRepository = async () => ({
   // https://velog.io/@1yongs_/NestJS-Testing-Jest
   // https://velog.io/@baik9261/Nest-JS-JESTUnit-Test
-  signUp: jest.fn(),
-  isEmailExist: jest.fn(),
-  isEmail: jest.fn(),
-  isPasswordValidate: jest.fn(),
-  saveUser: jest.fn(),
-  signIn: jest.fn(),
-  userExist: jest.fn(),
+  save: jest.fn(),
 });
 
 type MockRepository<T> = Partial<Record<keyof Repository<T>, jest.Mock>>;
@@ -58,8 +52,9 @@ describe('AuthService', () => {
         password: hashedPassword,
       };
 
+      // save.mockResolvedValue
       userAccountRepository.save.mockResolvedValue(userData);
-      const result = await service.signUp(userData);
+      const result = await service.saveUser(userData);
       console.log(result);
       expect(userAccountRepository.save).toHaveBeenCalledTimes(1);
     });
