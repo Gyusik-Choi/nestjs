@@ -131,7 +131,7 @@ export class AuthService {
 
     const userID: number = userExistData.id;
     const userPassword: string = userExistData.password;
-
+    console.log(userID);
     const isPasswordMatch: boolean = await bcrypt.compare(
       password,
       userPassword,

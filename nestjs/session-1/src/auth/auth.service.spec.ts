@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { UserAccount } from '../entities/userAccount.entity';
 import { AuthService } from './auth.service';
 import * as bcrypt from 'bcrypt';
+import * as httpMocks from 'node-mocks-http';
 
 const mockUsersRepository = async () => ({
   // https://velog.io/@1yongs_/NestJS-Testing-Jest
@@ -132,7 +133,32 @@ describe('AuthService', () => {
 
   describe('signIn', () => {
     it('should signIn', async () => {
-      //
+      // https://github.com/howardabrams/node-mocks-http#createrequest
+      const request = httpMocks.createRequest({
+        // https://github.com/howardabrams/node-mocks-http/blob/master/test/lib/mockRequest.spec.js
+        session: {
+          isAuthenticated: false,
+          userID: 100,
+        },
+      });
+
+      const email = 'bill@ms.com';
+      const password = 'Abcde12345!';
+      const hashedPassword: string = await bcrypt.hash(password, 10);
+
+      const userInputData = {
+        email: email,
+        password: password,
+      };
+
+      const mockData = {
+        email: email,
+        password: hashedPassword,
+      };
+
+      userAccountRepository.findOne.mockResolvedValue(mockData);
+      const result = await service.signIn(request, userInputData);
+      expect(result).toBeTruthy;
     });
   });
 
