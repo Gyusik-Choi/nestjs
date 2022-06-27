@@ -66,7 +66,20 @@ describe('AuthService', () => {
 
   describe('isEmailExist', () => {
     it('should know wheter user exists', async () => {
-      //
+      const email = 'bill@ms.com';
+      const password = 'Abcde12345!';
+      const hashedPassword: string = await bcrypt.hash(password, 10);
+
+      const userData = {
+        email: email,
+        password: hashedPassword,
+      };
+
+      userAccountRepository.findOne.mockResolvedValue(userData);
+      const result: [Error, null] | [null, boolean] =
+        await service.isEmailExist(email);
+
+      expect(result[1]).toBeTruthy;
     });
   });
 
