@@ -5,6 +5,8 @@ import { UserAccount } from '../entities/userAccount.entity';
 import { Repository } from 'typeorm';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { AuthGuard } from './common/auth.guard';
+import { CanActivate, ExecutionContext } from '@nestjs/common';
 
 const mockUsersRepository = () => ({
   save: jest.fn(),
@@ -12,6 +14,14 @@ const mockUsersRepository = () => ({
 });
 
 const mockSessionsRepository = () => ({});
+
+const mockAuthGuard: CanActivate = {
+  canActivate: (context: ExecutionContext) => {
+    const request = context.switchToHttp().getRequest();
+    console.log(request);
+    return request.user;
+  },
+};
 
 type MockRepository<T> = Partial<Record<keyof Repository<T>, jest.Mock>>;
 
@@ -35,7 +45,11 @@ describe('AuthController', () => {
           useValue: mockSessionsRepository(),
         },
       ],
-    }).compile();
+    })
+      // https://lahuman.jabsiri.co.kr/353
+      .overrideGuard(AuthGuard)
+      .useValue(mockAuthGuard)
+      .compile();
 
     controller = module.get<AuthController>(AuthController);
     service = module.get<AuthService>(AuthService);
@@ -61,5 +75,23 @@ describe('AuthController', () => {
 
   it('should be defined', () => {
     expect(sessionsRepository).toBeDefined();
+  });
+
+  describe('signUp', () => {
+    it('it should create new user', async () => {
+      const mockResult = '회원 가입에 성공했습니다';
+      const serviceCall = jest
+        .spyOn(service, 'signUp')
+        .mockResolvedValue(mockResult);
+
+      const inputData = {
+        email: 'bill@ms.com',
+        password: 'Abcde12345!',
+      };
+
+      const result = await controller.signUp(inputData);
+      expect(serviceCall).toBeCalledTimes(1);
+      expect(result).toEqual(mockResult);
+    });
   });
 });
