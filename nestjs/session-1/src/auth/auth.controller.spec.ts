@@ -79,19 +79,28 @@ describe('AuthController', () => {
 
   describe('signUp', () => {
     it('it should create new user', async () => {
-      const mockResult = '회원 가입에 성공했습니다';
-      const serviceCall = jest
-        .spyOn(service, 'signUp')
-        .mockResolvedValue(mockResult);
+      // const mockResult = '회원 가입에 성공했습니다';
+      // const serviceCall = jest
+      //   .spyOn(service, 'signUp')
+      //   .mockResolvedValue(mockResult);
+
+      // const inputData = {
+      //   email: 'bill@ms.com',
+      //   password: 'Abcde12345!',
+      // };
+
+      // const result = await controller.signUp(inputData);
+      // expect(serviceCall).toBeCalledTimes(1);
+      // expect(result).toEqual(mockResult);
 
       const inputData = {
         email: 'bill@ms.com',
         password: 'Abcde12345!',
       };
 
-      const result = await controller.signUp(inputData);
-      expect(serviceCall).toBeCalledTimes(1);
-      expect(result).toEqual(mockResult);
+      const successResult: string = await controller.signUp(inputData);
+
+      expect(successResult).toEqual('회원 가입에 성공했습니다');
     });
   });
 });
