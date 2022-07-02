@@ -115,6 +115,18 @@ const mockUsersRepository = async () => ({
 
 
 
+<br>
+
+### auth.controller.spec.ts
+
+- HttpService
+
+@nestjs/axios 모듈에서 가져와야 한다. @nestjs/common 에서 가져오는 방식은 deprecated 되었다.
+
+```tsx
+import { HttpService } from '@nestjs/axios';
+```
+
 
 
 <참고>

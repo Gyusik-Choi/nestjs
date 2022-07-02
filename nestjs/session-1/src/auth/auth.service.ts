@@ -123,15 +123,14 @@ export class AuthService {
     const [userExistError, userExistData]: [Error, null] | [null, UserAccount] =
       await this.userExist(email);
 
-    if (userExistData === null) {
-      console.log(userExistError);
+    if (userExistError !== null && userExistData === null) {
       // throw new BadRequestException();
       return false;
     }
 
     const userID: number = userExistData.id;
     const userPassword: string = userExistData.password;
-    console.log(userID);
+
     const isPasswordMatch: boolean = await bcrypt.compare(
       password,
       userPassword,
