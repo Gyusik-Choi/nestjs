@@ -9,6 +9,9 @@ const options = {
   database: process.env.DB_DATABASE,
   clearExpired: true,
   checkExpirationInterval: 30000,
+  schema: {
+    tableName: 'sessions',
+  },
   expiration: 60000,
 };
 
