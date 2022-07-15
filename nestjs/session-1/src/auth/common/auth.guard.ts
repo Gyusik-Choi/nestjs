@@ -5,15 +5,15 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Sessions } from '../../entities/session.entity';
+import { ExpressSessions } from '../../entities/expressSessions.entity';
 import { UserAccount } from '../../entities/userAccount.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
-    @InjectRepository(Sessions)
-    private readonly sessionRepository: Repository<Sessions>,
+    @InjectRepository(ExpressSessions)
+    private readonly sessionRepository: Repository<ExpressSessions>,
 
     @InjectRepository(UserAccount)
     private readonly userAccountRepository: Repository<UserAccount>,
@@ -25,7 +25,7 @@ export class AuthGuard implements CanActivate {
     let userID: number = null;
 
     try {
-      const result: Sessions = await this.sessionRepository.findOne({
+      const result: ExpressSessions = await this.sessionRepository.findOne({
         session_id: sessionID,
       });
 

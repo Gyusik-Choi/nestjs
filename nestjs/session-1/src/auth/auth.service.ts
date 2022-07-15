@@ -6,17 +6,21 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { UserAccount } from '../entities/userAccount.entity';
+import { UserAccount } from '../../src/entities/userAccount.entity';
 import { Request } from 'express';
 import { UserInputDataDTO } from './dto/userInputData.dto';
 import * as bcrypt from 'bcrypt';
 import { SignInInfo } from './dto/signInInfo.dto';
+import { ExpressSessions } from '../../src/entities/expressSessions.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(UserAccount)
     private readonly userAccountRepository: Repository<UserAccount>,
+
+    @InjectRepository(ExpressSessions)
+    private readonly expressSessionRepository: Repository<ExpressSessions>,
   ) {}
 
   async signUp(userInputData: UserInputDataDTO) {

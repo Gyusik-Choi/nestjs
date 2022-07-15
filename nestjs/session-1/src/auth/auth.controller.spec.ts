@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Sessions } from '../entities/session.entity';
+import { ExpressSessions } from '../entities/expressSessions.entity';
 import { UserAccount } from '../entities/userAccount.entity';
 import { Repository } from 'typeorm';
 import { AuthController } from './auth.controller';
@@ -33,7 +33,7 @@ describe('AuthController', () => {
   let controller: AuthController;
   let service: AuthService;
   let userAccountRepository: MockRepository<UserAccount>;
-  let sessionsRepository: MockRepository<Sessions>;
+  let sessionsRepository: MockRepository<ExpressSessions>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -45,7 +45,7 @@ describe('AuthController', () => {
           useValue: mockUsersRepository(),
         },
         {
-          provide: getRepositoryToken(Sessions),
+          provide: getRepositoryToken(ExpressSessions),
           useValue: mockSessionsRepository(),
         },
       ],
@@ -61,8 +61,8 @@ describe('AuthController', () => {
     userAccountRepository = module.get<MockRepository<UserAccount>>(
       getRepositoryToken(UserAccount),
     );
-    sessionsRepository = module.get<MockRepository<Sessions>>(
-      getRepositoryToken(Sessions),
+    sessionsRepository = module.get<MockRepository<ExpressSessions>>(
+      getRepositoryToken(ExpressSessions),
     );
   });
 

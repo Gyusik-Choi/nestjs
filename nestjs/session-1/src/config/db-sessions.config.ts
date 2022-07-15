@@ -10,7 +10,7 @@ const options = {
   clearExpired: true,
   checkExpirationInterval: 30000,
   schema: {
-    tableName: 'sessions',
+    tableName: 'ExpressSessions',
   },
   expiration: 60000,
 };

@@ -31,9 +31,6 @@ describe('AuthService', () => {
     }).compile();
 
     service = module.get<AuthService>(AuthService);
-    userAccountRepository = module.get<MockRepository<UserAccount>>(
-      getRepositoryToken(UserAccount),
-    );
   });
 
   it('should be defined', () => {
