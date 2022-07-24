@@ -28,6 +28,8 @@ describe('AuthController (e2e)', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AuthModule],
     })
+      // https://www.youtube.com/watch?v=dXOfOgFFKuY
+      // https://stackoverflow.com/questions/58344126/how-can-i-mock-nest-typeorm-database-module-in-end-to-end-e2e-tests
       .overrideProvider(getRepositoryToken(UserAccount))
       .useValue(mockUsersRepository)
       .overrideProvider(getRepositoryToken(ExpressSessions))
