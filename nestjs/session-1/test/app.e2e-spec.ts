@@ -1,9 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import { AppModule } from './../src/app.module';
-import { sessionOptions } from '../src/config/db-sessions.config';
+import { AppModule } from '../src/app.module';
 import * as request from 'supertest';
-import * as session from 'express-session';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { UserAccount } from '../src/entities/userAccount.entity';
+import { ExpressSessions } from '../src/entities/expressSessions.entity';
+
+const mockUsersRepository = () => ({
+  save: jest.fn(),
+  findOne: jest.fn(),
+});
+
+const mockSessionsRepository = () => ({});
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -11,11 +19,14 @@ describe('AppController (e2e)', () => {
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-      providers: [],
-    }).compile();
+    })
+      .overrideProvider(getRepositoryToken(UserAccount))
+      .useValue(mockUsersRepository)
+      .overrideProvider(getRepositoryToken(ExpressSessions))
+      .useValue(mockSessionsRepository)
+      .compile();
 
     app = moduleFixture.createNestApplication();
-    app.use(session(sessionOptions));
     await app.init();
   });
 
