@@ -114,7 +114,8 @@ export class AuthService {
     userInputData: UserInputDataDTO,
   ): Promise<[Error, null] | [null, UserAccount]> {
     try {
-      const result = await this.userAccountRepository.save(userInputData);
+      const result: UserInputDataDTO & UserAccount =
+        await this.userAccountRepository.save(userInputData);
       return [null, result];
     } catch (err) {
       return [err, null];

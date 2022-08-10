@@ -6,8 +6,7 @@ import { AuthModule } from '../src/auth/auth.module';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserAccount } from '../src/entities/userAccount.entity';
 import { ExpressSessions } from '../src/entities/expressSessions.entity';
-import * as session from 'express-session';
-import { sessionOptions } from '../src/config/db-sessions.config';
+// import { AuthService } from '../src/auth/auth.service';
 
 const mockUsersRepository = () => ({
   save: jest.fn().mockResolvedValue({
@@ -16,8 +15,18 @@ const mockUsersRepository = () => ({
     password: 'Abcde12345',
     emailVarification: false,
   }),
-  findOne: jest.fn().mockResolvedValue(false),
+  findOne: jest.fn().mockResolvedValue([null, false]),
 });
+
+// const mockUsersRepository = {
+//   save: jest.fn().mockResolvedValue({
+//     id: 1,
+//     email: 'bill@ms.com',
+//     password: 'Abcde12345',
+//     emailVarification: false,
+//   }),
+//   findOne: jest.fn().mockResolvedValue([null, false]),
+// };
 
 const mockSessionsRepository = () => ({});
 
@@ -27,17 +36,27 @@ describe('AuthController (e2e)', () => {
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AuthModule],
+      // providers: [
+      //   AuthService,
+      //   {
+      //     provide: getRepositoryToken(UserAccount),
+      //     useValue: mockUsersRepository(),
+      //   },
+      //   {
+      //     provide: getRepositoryToken(ExpressSessions),
+      //     useValue: mockSessionsRepository(),
+      //   },
+      // ],
     })
       // https://www.youtube.com/watch?v=dXOfOgFFKuY
       // https://stackoverflow.com/questions/58344126/how-can-i-mock-nest-typeorm-database-module-in-end-to-end-e2e-tests
       .overrideProvider(getRepositoryToken(UserAccount))
-      .useValue(mockUsersRepository)
+      .useValue(mockUsersRepository())
       .overrideProvider(getRepositoryToken(ExpressSessions))
       .useValue(mockSessionsRepository)
       .compile();
 
     app = moduleFixture.createNestApplication();
-    app.use(session(sessionOptions));
     await app.init();
   });
 
@@ -46,7 +65,7 @@ describe('AuthController (e2e)', () => {
       .post('/auth/signUp')
       .set('Accept', 'application/json')
       .send({ email: 'bill@ms.com', password: 'Abcde12345!' })
-      .expect(200);
+      .expect(201);
     // return request(app.getHttpServer()).post('/signUp').expect(404);
   });
 });
