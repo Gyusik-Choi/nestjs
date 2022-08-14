@@ -44,7 +44,7 @@ export class AuthService {
       throw new InternalServerErrorException();
     }
 
-    if (emailExistError !== null && emailExistResult) {
+    if (emailExistError !== null || emailExistResult) {
       throw new BadRequestException();
     }
 
@@ -127,7 +127,8 @@ export class AuthService {
 
     const [userExistError, userExistData]: [Error, null] | [null, UserAccount] =
       await this.userExist(email);
-
+    console.log(userExistError);
+    console.log(userExistData);
     if (userExistError !== null && userExistData === null) {
       // throw new BadRequestException();
       return false;
@@ -135,12 +136,12 @@ export class AuthService {
 
     const userID: number = userExistData.id;
     const userPassword: string = userExistData.password;
-
+    console.log(userID, userPassword);
     const isPasswordMatch: boolean = await bcrypt.compare(
       password,
       userPassword,
     );
-
+    console.log(isPasswordMatch);
     if (isPasswordMatch === false) {
       // throw new BadRequestException();
       return false;

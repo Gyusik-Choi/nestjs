@@ -6,16 +6,19 @@ import { AuthModule } from '../src/auth/auth.module';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserAccount } from '../src/entities/userAccount.entity';
 import { ExpressSessions } from '../src/entities/expressSessions.entity';
+import * as bcrypt from 'bcrypt';
+import * as httpMocks from 'node-mocks-http';
+import { SignInInfo } from '../src/auth/dto/signInInfo.dto';
 // import { AuthService } from '../src/auth/auth.service';
 
 const mockUsersRepository = () => ({
+  findOne: jest.fn().mockResolvedValue(false),
   save: jest.fn().mockResolvedValue({
     id: 1,
     email: 'bill@ms.com',
     password: 'Abcde12345',
     emailVarification: false,
   }),
-  findOne: jest.fn().mockResolvedValue([null, false]),
 });
 
 // const mockUsersRepository = {
@@ -66,6 +69,24 @@ describe('AuthController (e2e)', () => {
       .set('Accept', 'application/json')
       .send({ email: 'bill@ms.com', password: 'Abcde12345!' })
       .expect(201);
-    // return request(app.getHttpServer()).post('/signUp').expect(404);
   });
+
+  // it('/signIn (POST)', async () => {
+  //   const req = httpMocks.createRequest({
+  //     session: {
+  //       isAuthenticated: false,
+  //       userID: 'bill@ms.com',
+  //     },
+  //   });
+
+  //   const userInputData = {
+  //     email: 'bill@ms.com',
+  //     password: 'Abcde12345!',
+  //   };
+
+  //   return request(app.getHttpServer())
+  //     .post('/auth/signIn')
+  //     .set('Accept', 'application/json')
+  //     .expect(200);
+  // });
 });
