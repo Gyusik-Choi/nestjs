@@ -177,4 +177,8 @@ export class AuthService {
       return [err, null];
     }
   }
+
+  sayHi() {
+    return 'sayHi';
+  }
 }
