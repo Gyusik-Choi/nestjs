@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Post,
   Req,
   Session,
@@ -36,5 +37,10 @@ export class AuthController {
     console.log(req.session);
     console.log(userSession.id);
     return true;
+  }
+
+  @Get('sayHi')
+  sayHi() {
+    return this.authService.sayHi();
   }
 }
