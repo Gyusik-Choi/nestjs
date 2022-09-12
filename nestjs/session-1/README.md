@@ -135,39 +135,9 @@ import { HttpService } from '@nestjs/axios';
 
 #### auth.e2e-spec.ts
 
-useValue 를 사용할때 함수를 호출하거나 객체를 사용할 수 있다. 둘의 기능상의 차이점이 어떻게 되는지는 아직 파악하지 못했다. 테스트 코드 상에서는 두 방식 모두 정상적으로 동작했다. 이 둘을 제대로 구분하지 않고 작성해서 한참을 헤맸다.
 
-```typescript
-const mockUserRepository = {}
-
-describe('AuthController (e2e)', () => {
-  beforeEach(async() => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AuthModule],
-    })
-    .overrideProvider(getRepositoryToken(UserAccount))
-    .useValue(mockUserRepository)
-  })
-})
-```
 
 <br>
-
-```typescript
-const mockUserRepository = () => {}
-
-describe('AuthController (e2e)', () => {
-  beforeEach(async() => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AuthModule],
-    })
-    .overrideProvider(getRepositoryToken(UserAccount))
-    .useValue(mockUserRepository())
-  })
-})
-```
-
-
 
 <참고>
 

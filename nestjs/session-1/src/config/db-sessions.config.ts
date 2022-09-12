@@ -49,7 +49,8 @@ type sessionOptionsType = {
 };
 
 export const sessionOptions: sessionOptionsType = {
-  secret: process.env.SESSION_SECRET,
+  // secret: process.env.SESSION_SECRET,
+  secret: 'PALEBLUEDOT',
   store: sessionStore,
   resave: false,
   saveUninitialized: false,
