@@ -42,6 +42,9 @@ describe('AuthController (e2e)', () => {
     app = moduleFixture.createNestApplication();
     app.use(session(sessionOptions));
     // RepositoryNotFoundError: No repository for "UserAccount" was found. Looks like this entity is not registered in current "default" connection?
+    // 위는 ConfigModule.forRoot() 추가, TypeOrmModule.forRoot 안에 누락된 type 추가, TypeOrmModule.forFeature([UserAccount, ExpressSessions]) 추가로 해결
+
+    // https://blog.haneul-lee.com/2021/07/nestjs-에서-e2e-test-%EF%B8%8F/
     repository = moduleFixture.get<Repository<UserAccount>>(
       getRepositoryToken(UserAccount),
     );
