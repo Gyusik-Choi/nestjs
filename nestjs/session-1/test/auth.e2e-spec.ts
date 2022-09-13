@@ -9,11 +9,14 @@ import { ConfigModule } from '@nestjs/config';
 import * as session from 'express-session';
 import { sessionOptions } from '../src/config/db-sessions.config';
 import { ExpressSessions } from '../src/entities/expressSessions.entity';
+import * as httpMocks from 'node-mocks-http';
+import { SignInInfo } from '../src/auth/dto/signInInfo.dto';
 
+// npm run test:e2e test/auth.e2e-spec.ts
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
   // https://stackoverflow.com/questions/60217131/typeorm-and-nestjs-creating-database-tables-at-the-beginning-of-an-e2e-test
-  let repository: Repository<UserAccount>;
+  let userRepository: Repository<UserAccount>;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -45,13 +48,21 @@ describe('AuthController (e2e)', () => {
     // 위는 ConfigModule.forRoot() 추가, TypeOrmModule.forRoot 안에 누락된 type 추가, TypeOrmModule.forFeature([UserAccount, ExpressSessions]) 추가로 해결
 
     // https://blog.haneul-lee.com/2021/07/nestjs-에서-e2e-test-%EF%B8%8F/
-    repository = moduleFixture.get<Repository<UserAccount>>(
+    userRepository = moduleFixture.get<Repository<UserAccount>>(
       getRepositoryToken(UserAccount),
     );
     await app.init();
   });
 
-  // it('/signUp (POST)', () => {
+  // afterAll(async () => {
+  //   await userRepository.query('DELETE FROM UserAccount');
+  // });
+
+  it('/sayHi (GET)', () => {
+    return request(app.getHttpServer()).get('/auth/sayHi').expect(200);
+  });
+
+  // it('/signUp (POST)', async () => {
   //   return request(app.getHttpServer())
   //     .post('/auth/signUp')
   //     .set('Accept', 'application/json')
@@ -59,7 +70,24 @@ describe('AuthController (e2e)', () => {
   //     .expect(201);
   // });
 
-  it('/sayHi (GET)', () => {
-    return request(app.getHttpServer()).get('/auth/sayHi').expect(200);
+  it('/signIn (POST)', async () => {
+    const req = httpMocks.createRequest({
+      // https://github.com/howardabrams/node-mocks-http/blob/master/test/lib/mockRequest.spec.js
+      session: {
+        isAuthenticated: false,
+        userID: 100,
+      },
+    });
+
+    const signInInfo: SignInInfo = {
+      email: 'bill@ms.com',
+      password: 'Abcde12345!',
+    };
+
+    return request(app.getHttpServer())
+      .post('/auth/signIn')
+      .set('Accept', 'application/json')
+      .send({ request: req, signInInfo: signInInfo })
+      .expect(200);
   });
 });

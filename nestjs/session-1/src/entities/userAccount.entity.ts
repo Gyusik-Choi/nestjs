@@ -8,18 +8,21 @@ export class UserAccount {
   @Column({
     type: 'varchar',
     length: 50,
+    nullable: false,
   })
   email: string;
 
   @Column({
     type: 'varchar',
     length: 200,
+    nullable: false,
   })
   password: string;
 
   @Column({
     type: 'boolean',
     default: false,
+    nullable: false,
   })
   emailVerification: boolean;
 }
