@@ -26,8 +26,14 @@ export class AuthController {
   }
 
   @Post('signIn')
-  async signIn(@Req() request: Request, @Body() signInInfo: SignInInfo) {
-    return await this.authService.signIn(request, signInInfo);
+  async signIn(
+    // @Req() request: Request,
+    @Body() signInInfo: SignInInfo,
+    // https://stackoverflow.com/questions/66495537/nestjs-e2e-test-mock-session-decorator
+    // 컨트롤러에서 세션 속성 자체가 nest 에 구현되어 있다는 것을 이글을 보다가 알게 됐다
+    @Session() session: Record<string, any>,
+  ) {
+    return await this.authService.signIn(session, signInInfo);
   }
 
   @Post('test')

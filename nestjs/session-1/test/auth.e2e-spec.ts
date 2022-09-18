@@ -1,4 +1,6 @@
 import * as request from 'supertest';
+import * as session from 'express-session';
+import * as sessionMySQLStore from 'express-mysql-session';
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { AuthModule } from '../src/auth/auth.module';
@@ -6,10 +8,7 @@ import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { UserAccount } from '../src/entities/userAccount.entity';
 import { Repository } from 'typeorm';
 import { ConfigModule } from '@nestjs/config';
-import * as session from 'express-session';
-import { sessionOptions } from '../src/config/db-sessions.config';
 import { ExpressSessions } from '../src/entities/expressSessions.entity';
-import * as httpMocks from 'node-mocks-http';
 import { SignInInfo } from '../src/auth/dto/signInInfo.dto';
 
 // npm run test:e2e test/auth.e2e-spec.ts
@@ -19,6 +18,34 @@ describe('AuthController (e2e)', () => {
   let userRepository: Repository<UserAccount>;
 
   beforeAll(async () => {
+    const options = {
+      host: '127.0.0.1',
+      port: 3306,
+      user: 'root',
+      password: 'cks1991',
+      database: 'nestjs_typeorm1_e2e_test',
+      clearExpired: true,
+      checkExpirationInterval: 30000,
+      schema: {
+        tableName: 'ExpressSessions',
+      },
+      expiration: 60000,
+    };
+
+    const MySQLStore = sessionMySQLStore(session);
+    const sessionStore: sessionMySQLStore.MySQLStore = new MySQLStore(options);
+
+    const sessionOptions = {
+      // secret: process.env.SESSION_SECRET,
+      secret: 'PALEBLUEDOT',
+      store: sessionStore,
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        maxAge: 60000,
+      },
+    };
+
     const moduleFixture: TestingModule = await Test.createTestingModule({
       // https://stackoverflow.com/questions/60217131/typeorm-and-nestjs-creating-database-tables-at-the-beginning-of-an-e2e-test
       imports: [
@@ -54,30 +81,36 @@ describe('AuthController (e2e)', () => {
     await app.init();
   });
 
-  // afterAll(async () => {
-  //   await userRepository.query('DELETE FROM UserAccount');
-  // });
+  afterAll(async () => {
+    await userRepository.query('DELETE FROM UserAccount');
+  });
 
   it('/sayHi (GET)', () => {
     return request(app.getHttpServer()).get('/auth/sayHi').expect(200);
   });
 
-  // it('/signUp (POST)', async () => {
-  //   return request(app.getHttpServer())
-  //     .post('/auth/signUp')
-  //     .set('Accept', 'application/json')
-  //     .send({ email: 'bill@ms.com', password: 'Abcde12345!' })
-  //     .expect(201);
-  // });
+  it('/signUp (POST)', async () => {
+    return request(app.getHttpServer())
+      .post('/auth/signUp')
+      .set('Accept', 'application/json')
+      .send({ email: 'bill@ms.com', password: 'Abcde12345!' })
+      .expect(201);
+  });
 
   it('/signIn (POST)', async () => {
-    const req = httpMocks.createRequest({
-      // https://github.com/howardabrams/node-mocks-http/blob/master/test/lib/mockRequest.spec.js
-      session: {
-        isAuthenticated: false,
-        userID: 100,
-      },
-    });
+    // session 객체는 controller 에서 생성해서 넘겨주기 때문에
+    // 이곳에서 넘기면 추가적으로 하나의 인자를 더 넘기게 돼서
+    // service 코드에서 제대로 인식하지 못한다
+    //
+    // service 에서 SignInInfo DTO 로
+    // signInInfo 객체를 받게 되는데
+    // 여기서 const signInInfo: SignInInfo = { email: 'bill@ms.com', password: 'Abcde12345!' }
+    // .send({ signInInfo }) 이렇게 보내게 되면
+    // service 코드에서는 signInInfo 를
+    // { signInInfo: { email: 'bill@ms.com', password: 'Abcde12345!' } }
+    // 이렇게 인식하게 되므로
+    // .send( signInInfo ) 혹은 .send({ email: 'bill@ms.com', password: 'Abcde12345!' })
+    // 이렇게 보내면 정상적으로 service 에서 받을 수 있다
 
     const signInInfo: SignInInfo = {
       email: 'bill@ms.com',
@@ -87,7 +120,7 @@ describe('AuthController (e2e)', () => {
     return request(app.getHttpServer())
       .post('/auth/signIn')
       .set('Accept', 'application/json')
-      .send({ request: req, signInInfo: signInInfo })
-      .expect(200);
+      .send(signInInfo)
+      .expect(201);
   });
 });

@@ -122,15 +122,11 @@ export class AuthService {
     }
   }
 
-  async signIn(request: Request, signInInfo: SignInInfo) {
+  async signIn(session: Record<string, any>, signInInfo: SignInInfo) {
     const { email, password } = signInInfo;
-    console.log('signInInfo');
-    console.log(email);
-    console.log(password);
     const [userExistError, userExistData]: [Error, null] | [null, UserAccount] =
       await this.userExist(email);
-    console.log('userExistData');
-    console.log(userExistData);
+
     if (userExistError !== null && userExistData === null) {
       // throw new BadRequestException();
       return false;
@@ -142,8 +138,7 @@ export class AuthService {
       password,
       userPassword,
     );
-    console.log('isPasswordMatch');
-    console.log(isPasswordMatch);
+
     if (isPasswordMatch === false) {
       // throw new BadRequestException();
       return false;
@@ -156,11 +151,9 @@ export class AuthService {
     // maxAge 기간 동안 sessionID 가 같은 값이 나오게 된다
     // saveUninitialized 가 false 인 상태에서
     // session 객체를 수정하지 않으면
-    // sessionID 는 매번 요청때 마다 바뀐다
-    console.log(request.session);
-    console.log(request.sessionID);
-    request.session['isAuthenticated'] = true;
-    request.session['userID'] = userID;
+    // sessionID 는 매번 요청때 마다 바뀐다 (sessionID 는 session 객체가 아닌 request 객체 안에 있다)
+    session['isAuthenticated'] = true;
+    session['userID'] = userID;
     return true;
   }
 
