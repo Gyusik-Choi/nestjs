@@ -44,9 +44,4 @@ export class AuthController {
     console.log(userSession.id);
     return true;
   }
-
-  @Get('sayHi')
-  sayHi() {
-    return this.authService.sayHi();
-  }
 }

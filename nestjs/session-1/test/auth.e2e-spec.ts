@@ -85,10 +85,6 @@ describe('AuthController (e2e)', () => {
     await userRepository.query('DELETE FROM UserAccount');
   });
 
-  it('/sayHi (GET)', () => {
-    return request(app.getHttpServer()).get('/auth/sayHi').expect(200);
-  });
-
   it('/signUp (POST)', async () => {
     return request(app.getHttpServer())
       .post('/auth/signUp')

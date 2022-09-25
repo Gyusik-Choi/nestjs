@@ -7,7 +7,6 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserAccount } from '../../src/entities/userAccount.entity';
-import { Request } from 'express';
 import { UserInputDataDTO } from './dto/userInputData.dto';
 import * as bcrypt from 'bcrypt';
 import { SignInInfo } from './dto/signInInfo.dto';
@@ -128,7 +127,6 @@ export class AuthService {
       await this.userExist(email);
 
     if (userExistError !== null && userExistData === null) {
-      // throw new BadRequestException();
       return false;
     }
 
@@ -171,9 +169,5 @@ export class AuthService {
     } catch (err) {
       return [err, null];
     }
-  }
-
-  sayHi() {
-    return 'sayHi';
   }
 }

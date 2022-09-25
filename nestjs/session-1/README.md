@@ -135,7 +135,9 @@ import { HttpService } from '@nestjs/axios';
 
 #### auth.e2e-spec.ts
 
+beforeEach 가 아니라 beforeAll 로 DB 세팅을 하여 테스트할 메소드들에 공통적으로 적용될 수 있도록 했다. 
 
+DB 를 세팅하는 과정에서 에러가 발생했는데, 에러는 단순한 부분에서 발생했다. TypeOrmModule.forRoot({ }) 안에 type 속성을 누락했고, .env 값을 불러와야 하는데 이를 사용하기 위한 ConfigModule.forRoot() 를 imports 에 누락해서 발생했다.
 
 <br>
 
