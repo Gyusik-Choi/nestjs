@@ -23,3 +23,7 @@ https://dnlytras.com/snippets/redis-session/
 https://dev.to/nestjs/setting-up-sessions-with-nestjs-passport-and-redis-210
 
 https://www.loginradius.com/blog/engineering/guest-post/session-authentication-with-nestjs-and-mongodb/
+
+https://inpa.tistory.com/entry/NODE-📚-Passport-모듈-그림으로-처리과정-💯-이해하자
+
+http://www.passportjs.org/concepts/authentication/sessions/
