@@ -29,3 +29,5 @@ https://inpa.tistory.com/entry/NODE-📚-Passport-모듈-그림으로-처리과�
 http://www.passportjs.org/concepts/authentication/sessions/
 
 https://wanago.io/2021/06/07/api-nestjs-server-side-sessions-instead-of-json-web-tokens/
+
+https://stackoverflow.com/questions/40381401/when-to-use-saveuninitialized-and-resave-in-express-session
