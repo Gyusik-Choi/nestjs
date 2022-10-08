@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { DbConfigModule } from './db-config/db-config.module';
 import { DbConfigService } from './db-config/db-config.service';
 import { AuthModule } from './auth/auth.module';
+import { PassportModule } from './auth/passport/passport.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { AuthModule } from './auth/auth.module';
       inject: [DbConfigService],
     }),
     AuthModule,
+    PassportModule,
   ],
   controllers: [AppController],
   providers: [AppService],
