@@ -12,7 +12,7 @@ async function bootstrap() {
     session({
       secret: configService.get('SESSION_SECRET'),
       resave: false,
-      saveUninitialized: true,
+      saveUninitialized: false,
     }),
   );
 

@@ -21,7 +21,6 @@ export class UserAccount {
 
   @Column({
     type: 'tinyint',
-    length: 1,
     nullable: false,
     default: false,
   })
