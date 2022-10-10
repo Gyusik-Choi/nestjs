@@ -10,6 +10,22 @@ TypeOrmOptionsFactory 인터페이스를 implements 한 클래스 파일을 생�
 
 <br>
 
+### error: unknown authentication strategy local
+
+AuthModule 의 providers 에 LocalStrategy, LocalSerializer 를 작성하지 않아서 발생한 에러였다.
+
+<br>
+
+### SignInGuard
+
+[이분](https://adoreje.tistory.com/6) 의 글을 통해서 
+
+AuthGuard('local') 를 상속받은 SignInGuard => PassportStrategy(Strategy) 를 상속받은 LocalStrategy 로 이어짐을 알 수 있었다.
+
+AuthGuard('local') 에서 PassportStrategy(Strategy) 를 찾는다.
+
+<br>
+
 <참고>
 
 https://docs.nestjs.com/techniques/database
@@ -35,3 +51,7 @@ https://stackoverflow.com/questions/40381401/when-to-use-saveuninitialized-and-r
 https://stackoverflow.com/questions/38820251/how-is-req-isauthenticated-in-passport-js-implemented
 
 https://github.com/jaredhanson/passport/blob/a892b9dc54dce34b7170ad5d73d8ccfba87f4fcf/lib/passport/http/request.js#L74
+
+https://stackoverflow.com/questions/69788605/nestjs-error-unknown-authentication-strategy-local
+
+https://adoreje.tistory.com/6
