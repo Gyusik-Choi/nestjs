@@ -31,3 +31,7 @@ http://www.passportjs.org/concepts/authentication/sessions/
 https://wanago.io/2021/06/07/api-nestjs-server-side-sessions-instead-of-json-web-tokens/
 
 https://stackoverflow.com/questions/40381401/when-to-use-saveuninitialized-and-resave-in-express-session
+
+https://stackoverflow.com/questions/38820251/how-is-req-isauthenticated-in-passport-js-implemented
+
+https://github.com/jaredhanson/passport/blob/a892b9dc54dce34b7170ad5d73d8ccfba87f4fcf/lib/passport/http/request.js#L74
