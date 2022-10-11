@@ -20,7 +20,7 @@ export class AuthService {
     private readonly userAccountRepository: Repository<UserAccount>,
   ) {}
 
-  async signUp(signUpData: SignUpDataDTO) {
+  async signUp(signUpData: SignUpDataDTO): Promise<string> {
     const { email, password } = signUpData;
 
     const emailResult: boolean = this.isEmail(email);
@@ -45,7 +45,7 @@ export class AuthService {
     return '회원 가입에 성공했습니다';
   }
 
-  isEmail(email: string) {
+  isEmail(email: string): boolean {
     // https://github.com/manishsaraan/email-validator
     const emailRegex =
       /^[-!#$%&'*+\/0-9=?A-Z^_a-z`{|}~](\.?[-!#$%&'*+\/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/;
@@ -57,7 +57,7 @@ export class AuthService {
     return false;
   }
 
-  isPasswordValidate(password: string) {
+  isPasswordValidate(password: string): boolean {
     // https://www.thepolyglotdeveloper.com/2015/05/use-regex-to-test-password-strength-in-javascript/
     const passwordRegex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/;
@@ -98,8 +98,8 @@ export class AuthService {
   //   console.log(signInData);
   // }
 
-  async getByEmail(email: string) {
-    const user = await this.userAccountRepository.findOne({
+  async getByEmail(email: string): Promise<UserAccount> {
+    const user: UserAccount = await this.userAccountRepository.findOne({
       where: {
         email: email,
       },
@@ -112,32 +112,22 @@ export class AuthService {
     throw new NotFoundException('User with this email does not exist');
   }
 
-  public async getAuthenticatedUser(email: string, plainTextPassword: string) {
+  public async getAuthenticatedUser(
+    email: string,
+    plainPassword: string,
+  ): Promise<UserAccount> {
     try {
-      const user = await this.getByEmail(email);
-      await this.verifyPassword(plainTextPassword, user.password);
+      const user: UserAccount = await this.getByEmail(email);
+      await this.checkPassword(plainPassword, user.password);
       return user;
     } catch (error) {
-      throw new HttpException(
-        'Wrong credentials provided',
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new BadRequestException();
     }
   }
 
-  private async verifyPassword(
-    plainTextPassword: string,
-    hashedPassword: string,
-  ) {
-    const isPasswordMatching = await bcrypt.compare(
-      plainTextPassword,
-      hashedPassword,
-    );
-    if (!isPasswordMatching) {
-      throw new HttpException(
-        'Wrong credentials provided',
-        HttpStatus.BAD_REQUEST,
-      );
+  private async checkPassword(plainPassword: string, hashedPassword: string) {
+    if (!(await bcrypt.compare(plainPassword, hashedPassword))) {
+      throw new BadRequestException();
     }
   }
 }

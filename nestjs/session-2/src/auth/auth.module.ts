@@ -4,8 +4,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserAccount } from 'src/entities/userAccount.entity';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { LocalSerializer } from './local.serializer';
-import { LocalStrategy } from './local.strategy';
+import { LocalSerializer } from './auth-helpers/local.serializer';
+import { LocalStrategy } from './auth-helpers/local.strategy';
 
 @Module({
   imports: [PassportModule, TypeOrmModule.forFeature([UserAccount])],
