@@ -26,6 +26,82 @@ AuthGuard('local') 에서 PassportStrategy(Strategy) 를 찾는다.
 
 <br>
 
+### AuthGuard('local') - canActivate
+
+위에서 AuthGuard('local') => PassportStrategy(Strategy) 로 이어진다고 했는데, 이는 다시 PassportStrategy(Strategy) => PassportSerializer 로 이어진다.
+
+PassportSerializer 는 추상 클래스이고 실제로는 이를 구현한 클래스로 이어지는데 여기서 serializeUser 의 구현을 통해서 Session 에 저장할 값을 지정해줄 수 있다.
+
+> We need to specify the exact data we want to keep inside the session. To manage it, we need to create a **serializer**.
+
+<br>
+
+```typescript
+@Injectable()
+export class LocalSerializer extends PassportSerializer {
+  constructor(private readonly authService: AuthService) {
+    super();
+  }
+
+  serializeUser(user: UserAccount, done: CallableFunction) {
+    done(null, user.id);
+  }
+}
+
+```
+
+serializeUser 에서 user.id 를 콜백 함수의 인자로 넘겨주면서 user.id 를 Session 에 저장되도록 한다. 다만 이는 무조건 되지 않는다.
+
+<br>
+
+```typescript
+@Injectable()
+export class SignInGuard extends AuthGuard('local') {}
+
+```
+
+```
+Session {
+  cookie: { path: '/', _expires: null, originalMaxAge: null, httpOnly: true }
+}
+```
+
+AuthGuard('local') 을 구현한 SignInGuard 에 아무것도 작성하지 않았을 때 로그인 후 Session 값을 살펴보면 user.id 값이 보이지 않는다.
+
+<br>
+
+```typescript
+@Injectable()
+export class SignInGuard extends AuthGuard('local') {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    // check the email and the password
+    await super.canActivate(context);
+
+    // initialize the session
+    const request = context.switchToHttp().getRequest();
+    await super.logIn(request);
+
+    // if no exceptions were thrown, allow the access to the route
+    return true;
+  }
+}
+```
+
+
+
+```
+Session {
+  cookie: { path: '/', _expires: null, originalMaxAge: null, httpOnly: true },
+  passport: { user: 1 }
+}
+```
+
+<br>
+
+AuthGuard('local') 을 구현한 SignInGuard 에 canActivate 함수를 만들고 로직을 작성하니 Session 에 위에는 없었던 user.id 값이 생성됐다. canActivate 의 구현 부분을 아직 제대로 이해하지 못했다.
+
+<br>
+
 <참고>
 
 https://docs.nestjs.com/techniques/database
