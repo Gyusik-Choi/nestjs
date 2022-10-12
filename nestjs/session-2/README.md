@@ -102,6 +102,20 @@ AuthGuard('local') 을 구현한 SignInGuard 에 canActivate 함수를 만들고
 
 <br>
 
+### SignInGuard
+
+로그인을 할때 @UseGuards 설정으로 SignInGuard 를 두면서 AuthService 에서 수행할 역할이 많이 없어졌다. SignInGuard 를 통해서 아이디, 비밀번호를 검사하고 세션 생성을 진행하기 때문에 AuthService 의 역할이 많이 줄었다. 물론 실제 서비스를 운영한다면 로그를 찍는 등 다양하게 해야할 기능들이 있을 것이다. 
+
+이번 프로젝트에서는 아이디, 비밀번호 검사 및 세션 생성을 모두 Guard 에서 하면서 사실상 AuthService 에서 로그인 관련 처리를 할 내용들이 없어졌다.
+
+<br>
+
+### AuthenticationGuard
+
+클라이언트에게 발급한 세션 ID 의 유효성을 검사한다. 세션 정보는 서버에서 갖고 있고, 클라이언트는 세션 ID 만 전달받게 되는데 이 ID 를 바탕으로 세션이 유효한지를 AuthenticationGuard 에서 검사한다. 로그인이 유효한 상태인지 검사한 후에 controller 에서 요청을 받길 원하는 곳에서 이 Guard 를 활용할 수 있다.
+
+<br>
+
 <참고>
 
 https://docs.nestjs.com/techniques/database

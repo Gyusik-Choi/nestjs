@@ -9,7 +9,6 @@ import { Repository } from 'typeorm';
 import { UserAccount } from '../entities/userAccount.entity';
 import { SignUpDataDTO } from './dto/signUpData.dto';
 import * as bcrypt from 'bcrypt';
-// import { SignInDataDTO } from './dto/signInData.dto';
 
 @Injectable()
 export class AuthService {
@@ -95,6 +94,20 @@ export class AuthService {
   // async signIn(signInData: SignInDataDTO) {
   //   console.log(signInData);
   // }
+
+  async getById(id: number): Promise<UserAccount> {
+    const user: UserAccount = await this.userAccountRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+
+    if (user) {
+      return user;
+    }
+
+    throw new NotFoundException('User with this email does not exist');
+  }
 
   async getByEmail(email: string): Promise<UserAccount> {
     const user: UserAccount = await this.userAccountRepository.findOne({
