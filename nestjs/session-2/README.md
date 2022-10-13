@@ -116,6 +116,12 @@ AuthGuard('local') 을 구현한 SignInGuard 에 canActivate 함수를 만들고
 
 <br>
 
+### redis 에러 - the client is closed
+
+3.1.2 버전으로 설치해야 한다.
+
+<br>
+
 <참고>
 
 https://docs.nestjs.com/techniques/database
@@ -145,3 +151,5 @@ https://github.com/jaredhanson/passport/blob/a892b9dc54dce34b7170ad5d73d8ccfba87
 https://stackoverflow.com/questions/69788605/nestjs-error-unknown-authentication-strategy-local
 
 https://adoreje.tistory.com/6
+
+https://sarc.io/index.php/forum/tips/30058-redis-node-js-clientclosederror-the-client-is-closed
