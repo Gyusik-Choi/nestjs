@@ -18,12 +18,35 @@ describe('AuthController (e2e)', () => {
   let userRepository: Repository<UserAccount>;
 
   beforeAll(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      // https://stackoverflow.com/questions/60217131/typeorm-and-nestjs-creating-database-tables-at-the-beginning-of-an-e2e-test
+      imports: [
+        // process.env 값을 참조하는데 ConfigModule.forRoot() 를 누락해왔다
+        ConfigModule.forRoot(),
+        AuthModule,
+        TypeOrmModule.forRoot({
+          // type 을 누락해왔다
+          type: 'mysql',
+          host: process.env.DB_HOST,
+          port: parseInt(process.env.DB_PORT),
+          username: process.env.DB_USER,
+          password: process.env.DB_PASSWORD,
+          database: process.env.DB_TEST_DATABASE,
+          entities: [UserAccount, ExpressSessions],
+          logging: true,
+          synchronize: false,
+        }),
+        // https://stackoverflow.com/questions/55717089/test-nestjs-service-against-actual-database
+        TypeOrmModule.forFeature([UserAccount, ExpressSessions]),
+      ],
+    }).compile();
+
     const options = {
-      host: '127.0.0.1',
-      port: 3306,
-      user: 'root',
-      password: 'cks1991',
-      database: 'nestjs_typeorm1_e2e_test',
+      host: process.env.DB_HOST,
+      port: parseInt(process.env.DB_PORT),
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_TEST_DATABASE,
       clearExpired: true,
       checkExpirationInterval: 30000,
       schema: {
@@ -36,8 +59,7 @@ describe('AuthController (e2e)', () => {
     const sessionStore: sessionMySQLStore.MySQLStore = new MySQLStore(options);
 
     const sessionOptions = {
-      // secret: process.env.SESSION_SECRET,
-      secret: 'PALEBLUEDOT',
+      secret: process.env.SESSION_SECRET,
       store: sessionStore,
       resave: false,
       saveUninitialized: false,
@@ -45,29 +67,6 @@ describe('AuthController (e2e)', () => {
         maxAge: 60000,
       },
     };
-
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      // https://stackoverflow.com/questions/60217131/typeorm-and-nestjs-creating-database-tables-at-the-beginning-of-an-e2e-test
-      imports: [
-        // process.env 값을 참조하는데 ConfigModule.forRoot() 를 누락해왔다
-        ConfigModule.forRoot(),
-        AuthModule,
-        TypeOrmModule.forRoot({
-          // type 을 누락해왔다
-          type: 'mysql',
-          host: '127.0.0.1',
-          port: parseInt(process.env.DB_PORT),
-          username: process.env.DB_USER,
-          password: process.env.DB_PASSWORD,
-          database: 'nestjs_typeorm1_e2e_test',
-          entities: [UserAccount, ExpressSessions],
-          logging: true,
-          synchronize: false,
-        }),
-        // https://stackoverflow.com/questions/55717089/test-nestjs-service-against-actual-database
-        TypeOrmModule.forFeature([UserAccount, ExpressSessions]),
-      ],
-    }).compile();
 
     app = moduleFixture.createNestApplication();
     app.use(session(sessionOptions));
