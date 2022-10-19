@@ -5,6 +5,8 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { SignUpDataDTO } from './dto/signUpData.dto';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import * as httpMocks from 'node-mocks-http';
+import SignInInterface from './interfaces/signIn.interface';
 
 const mockUserAccountRepository = async () => ({
   findOne: jest.fn(),
@@ -54,6 +56,17 @@ describe('AuthController', () => {
 
       const result = await controller.signUp(signUpData);
       expect(result).toEqual('회원 가입에 성공했습니다');
+    });
+  });
+
+  describe('signIn', () => {
+    it('success signIn', async () => {
+      const request: SignInInterface = httpMocks.createRequest({
+        email: 'bill@ms.com',
+        password: 'Abcde12345!',
+      });
+
+      console.log(controller.signIn(request));
     });
   });
 });

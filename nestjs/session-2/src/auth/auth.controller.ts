@@ -26,8 +26,8 @@ export class AuthController {
   @Post('signIn')
   @UseGuards(SignInGuard)
   async signIn(@Req() req: SignInInterface) {
-    console.log(req.session);
-    console.log(req.sessionID);
+    // console.log(req.session);
+    // console.log(req.sessionID);
     return req.user;
   }
 
