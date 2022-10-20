@@ -13,6 +13,7 @@ import SignInInterface from './interfaces/signIn.interface';
 import { SignInGuard } from './guards/signIn.guard';
 import { AuthenticationGuard } from './guards/authentication.guard';
 import AuthenticationInterface from './interfaces/authentication.interface';
+import { UserAccount } from '../../src/entities/userAccount.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -25,7 +26,9 @@ export class AuthController {
 
   @Post('signIn')
   @UseGuards(SignInGuard)
-  async signIn(@Req() req: SignInInterface) {
+  // https://techbless.github.io/2020/04/07/TypeScript에서-Passport이용시-req-user-타입-문제-해결하기/
+  // https://darrengwon.tistory.com/109
+  async signIn(@Req() req: SignInInterface): Promise<UserAccount> {
     // console.log(req.session);
     // console.log(req.sessionID);
     return req.user;
@@ -33,7 +36,9 @@ export class AuthController {
 
   @Get('authenticate')
   @UseGuards(AuthenticationGuard)
-  async authenticate(@Req() req: AuthenticationInterface) {
+  async authenticate(
+    @Req() req: AuthenticationInterface,
+  ): Promise<UserAccount> {
     return req.user;
   }
 

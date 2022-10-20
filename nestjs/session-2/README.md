@@ -122,6 +122,10 @@ AuthGuard('local') 을 구현한 SignInGuard 에 canActivate 함수를 만들고
 
 <br>
 
+### passport 모듈의 req.user 타입 문제
+
+[이분](https://techbless.github.io/2020/04/07/TypeScript에서-Passport이용시-req-user-타입-문제-해결하기/)의 글을 통해 쉽게 해결할 수 있었다. 
+
 <참고>
 
 https://docs.nestjs.com/techniques/database
@@ -153,3 +157,5 @@ https://stackoverflow.com/questions/69788605/nestjs-error-unknown-authentication
 https://adoreje.tistory.com/6
 
 https://sarc.io/index.php/forum/tips/30058-redis-node-js-clientclosederror-the-client-is-closed
+
+https://techbless.github.io/2020/04/07/TypeScript에서-Passport이용시-req-user-타입-문제-해결하기/
