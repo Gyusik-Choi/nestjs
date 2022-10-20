@@ -61,12 +61,21 @@ describe('AuthController', () => {
 
   describe('signIn', () => {
     it('success signIn', async () => {
+      const user: UserAccount = {
+        id: 1,
+        email: 'bill@ms.com',
+        password: 'abcdefghijklmnopqrstuvwxyz',
+        emailVerification: false,
+      };
+
       const request: SignInInterface = httpMocks.createRequest({
         email: 'bill@ms.com',
         password: 'Abcde12345!',
+        user,
       });
 
-      console.log(controller.signIn(request));
+      const result: UserAccount = await controller.signIn(request);
+      expect(result).toEqual(user);
     });
   });
 });
