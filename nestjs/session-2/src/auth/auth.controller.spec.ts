@@ -78,4 +78,24 @@ describe('AuthController', () => {
       expect(result).toEqual(user);
     });
   });
+
+  describe('authenticate', () => {
+    it('success authenticate', async () => {
+      const user: UserAccount = {
+        id: 1,
+        email: 'bill@ms.com',
+        password: 'abcdefghijklmnopqrstuvwxyz',
+        emailVerification: false,
+      };
+
+      const request: SignInInterface = httpMocks.createRequest({
+        email: 'bill@ms.com',
+        password: 'Abcde12345!',
+        user,
+      });
+
+      const result = await controller.authenticate(request);
+      expect(result).toEqual(user);
+    });
+  });
 });
