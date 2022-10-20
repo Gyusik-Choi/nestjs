@@ -124,7 +124,32 @@ AuthGuard('local') 을 구현한 SignInGuard 에 canActivate 함수를 만들고
 
 ### passport 모듈의 req.user 타입 문제
 
-[이분](https://techbless.github.io/2020/04/07/TypeScript에서-Passport이용시-req-user-타입-문제-해결하기/)의 글을 통해 쉽게 해결할 수 있었다. 
+[이분](https://techbless.github.io/2020/04/07/TypeScript에서-Passport이용시-req-user-타입-문제-해결하기/)의 글을 통해 쉽게 해결할 수 있었다. auth controller 의 signIn, authenticate 에서 req.user 를 리턴하는데 이때 타입을 지정하면 에러가 발생하는 문제가 있었다. 
+
+<br>
+
+```typescript
+// @types/passport/index.d.ts
+declare global {
+    namespace Express {
+        // tslint:disable-next-line:no-empty-interface
+        interface AuthInfo {}
+        // tslint:disable-next-line:no-empty-interface
+        interface User {}
+
+        interface Request {
+            authInfo?: AuthInfo | undefined;
+            user?: User | undefined;
+        }
+    }
+}
+```
+
+user 는 DB 와 연결된 UserAccount 객체인데 passport 모듈의 타입을 정의한 @types/passport/index.d.ts 의 코드를 보면 User 인터페이스는 빈 객체다. Request 인터페이스의 user 는 빈 객체인 User 혹은 undefined 로 정의되어 있다. 그래서 req.user 의 타입이 UserAccount 가 될 수 없다고 하게된다. 이를 해결하기 위해 User 가 UserAccount 를 상속하도록 타입을 새롭게 정의해주면 된다.
+
+[이분](https://darrengwon.tistory.com/109)의 글을 통해 쉽게 타입을 정의할 수 있었다. 타입을 새롭게 정의하려면 tsconfig 파일의 typeRoots 속성을 추가해서 내가 정의한 타입을 바라볼 수 있도록 설정해줘야 하는데, 주의할 점은 내가 생성한 타입 파일 외에 node modules 의 @types 폴더도 함께 넣어줘야 한다.
+
+<br>
 
 <참고>
 
@@ -159,3 +184,5 @@ https://adoreje.tistory.com/6
 https://sarc.io/index.php/forum/tips/30058-redis-node-js-clientclosederror-the-client-is-closed
 
 https://techbless.github.io/2020/04/07/TypeScript에서-Passport이용시-req-user-타입-문제-해결하기/
+
+https://darrengwon.tistory.com/109
