@@ -151,6 +151,14 @@ user 는 DB 와 연결된 UserAccount 객체인데 passport 모듈의 타입을 
 
 <br>
 
+### AuthGuard('local')
+
+AuthGuard('local') -> LocalStrategy(validate 함수) -> PassportSerializer(serializerUser 함수) -> AuthGuard('local')
+
+AuthGuard('local') 에서 await super.logIn(request) 를 통해 passport 모듈의 http/request.js 의 logIn 함수 호출한다. 어떻게 request.js 의 logIn 까지 올 수 있는지 중간 과정을 잘 모르겠다. 그러나 이 함수에 도달해야 여기서 sessionmanager.js 에 정의된 SessionManager 의 login 함수를 호출하게 된다. 그리고 SessionManager 의 login 함수에서 serializerUser 함수를 호출한다. 이 함수의 콜백 함수를 통해 request 객체의 session 객체 안에 프로퍼티를 설정해준다. 프로퍼티의 key 로 self._key 로 설정된 값(사용자가 따로 인자로 넘기지 않으면 passport 로 설정됨) 을 설정한다. 그리고 PassportSerializer 에 작성한 serializeUser 함수의 콜백 함수인 done 의 두번째 인자로 설정한 값을 받아서 value 로 넣어준다.
+
+<br>
+
 <참고>
 
 https://docs.nestjs.com/techniques/database
