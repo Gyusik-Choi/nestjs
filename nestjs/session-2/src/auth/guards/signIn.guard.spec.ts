@@ -3,9 +3,11 @@
 // https://stackoverflow.com/questions/67496417/how-to-do-unit-testing-for-guard-in-nest
 // https://stackoverflow.com/questions/62595603/nestjs-how-can-i-mock-executioncontext-in-canactivate
 // https://stackoverflow.com/questions/67832906/unit-testing-nestjs-guards-unknown-authentication-strategy
+// https://stackoverflow.com/questions/18452147/mocking-passport-js-local-strategy-in-a-unit-test
 
 import { SignInGuard } from './signIn.guard';
 import * as httpMocks from 'node-mocks-http';
+import * as passport from 'passport';
 import { createMock } from '@golevelup/ts-jest';
 import { ExecutionContext } from '@nestjs/common';
 
@@ -14,6 +16,7 @@ describe('SignInGuard', () => {
 
   beforeEach(() => {
     guard = new SignInGuard();
+    // passport.use('local', );
   });
 
   it('should be defined', () => {
