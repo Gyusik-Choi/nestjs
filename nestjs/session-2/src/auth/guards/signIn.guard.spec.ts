@@ -10,13 +10,16 @@ import * as httpMocks from 'node-mocks-http';
 import * as passport from 'passport';
 import { createMock } from '@golevelup/ts-jest';
 import { ExecutionContext } from '@nestjs/common';
+// https://github.com/cszatmary/passport-mock-strategy
+import { MockStrategy } from 'passport-mock-strategy';
+import { User } from 'passport-mock-strategy/lib/mock-user';
 
 describe('SignInGuard', () => {
   let guard: SignInGuard;
 
   beforeEach(() => {
     guard = new SignInGuard();
-    // passport.use('local', );
+    passport.use('local', new MockStrategy());
   });
 
   it('should be defined', () => {
@@ -24,6 +27,25 @@ describe('SignInGuard', () => {
   });
 
   it('return true', async () => {
+    // const httpMock = httpMocks.createRequest({
+    //   logIn: jest.fn(),
+    // });
+
+    // const user: User = {
+    //   id: 'bill',
+    //   name: {
+    //     familyName: '',
+    //     givenName: '',
+    //   },
+    //   emails: [
+    //     {
+    //       value: '',
+    //       type: '',
+    //     },
+    //   ],
+    //   provider: '',
+    // };
+
     const httpMock = httpMocks.createRequest({
       logIn: jest.fn(),
     });
