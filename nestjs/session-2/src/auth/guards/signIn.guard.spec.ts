@@ -19,7 +19,6 @@ describe('SignInGuard', () => {
 
   beforeEach(() => {
     guard = new SignInGuard();
-    passport.use('local', new MockStrategy());
   });
 
   it('should be defined', () => {
@@ -45,6 +44,8 @@ describe('SignInGuard', () => {
     //   ],
     //   provider: '',
     // };
+
+    passport.use('local', new MockStrategy());
 
     const httpMock = httpMocks.createRequest({
       logIn: jest.fn(),
