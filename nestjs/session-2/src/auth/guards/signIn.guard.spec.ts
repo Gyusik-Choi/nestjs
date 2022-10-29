@@ -12,7 +12,6 @@ import { createMock } from '@golevelup/ts-jest';
 import { ExecutionContext } from '@nestjs/common';
 // https://github.com/cszatmary/passport-mock-strategy
 import { MockStrategy } from 'passport-mock-strategy';
-import { User } from 'passport-mock-strategy/lib/mock-user';
 
 describe('SignInGuard', () => {
   let guard: SignInGuard;
@@ -26,30 +25,9 @@ describe('SignInGuard', () => {
   });
 
   it('return true', async () => {
-    // const httpMock = httpMocks.createRequest({
-    //   logIn: jest.fn(),
-    // });
-
-    // const user: User = {
-    //   id: 'bill',
-    //   name: {
-    //     familyName: '',
-    //     givenName: '',
-    //   },
-    //   emails: [
-    //     {
-    //       value: '',
-    //       type: '',
-    //     },
-    //   ],
-    //   provider: '',
-    // };
-
     passport.use('local', new MockStrategy());
 
-    const httpMock = httpMocks.createRequest({
-      logIn: jest.fn(),
-    });
+    const httpMock = httpMocks.createRequest();
 
     const mockExecutionContext = createMock<ExecutionContext>({
       switchToHttp: () => ({

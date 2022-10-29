@@ -159,6 +159,12 @@ AuthGuard('local') 에서 await super.logIn(request) 를 통해 passport 모듈�
 
 <br>
 
+### req.session.regenerate is not a function
+
+signIn.guard.spec.ts 파일에서 guard 테스트를 진행하던 중 해당 에러가 발생했는데, 이는 passport 모듈의 버전을 낮춰서 해결할 수 있었다. 기존에 설치한 버전이 0.6.0 이었는데 0.5.x 으로 낮추라는 passport 모듈의 개발자가 직접 한 [답변](https://github.com/jaredhanson/passport/issues/907)이다. 
+
+<br>
+
 <참고>
 
 https://docs.nestjs.com/techniques/database
@@ -194,3 +200,8 @@ https://sarc.io/index.php/forum/tips/30058-redis-node-js-clientclosederror-the-c
 https://techbless.github.io/2020/04/07/TypeScript에서-Passport이용시-req-user-타입-문제-해결하기/
 
 https://darrengwon.tistory.com/109
+
+https://stackoverflow.com/questions/72375564/typeerror-req-session-regenerate-is-not-a-function-using-passport
+
+https://github.com/jaredhanson/passport/issues/907
+
