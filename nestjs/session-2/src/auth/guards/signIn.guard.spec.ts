@@ -19,7 +19,7 @@ describe('SignInGuard', () => {
   beforeAll(() => {
     passport.use('local', new MockStrategy());
     // https://stackoverflow.com/questions/19948816/passport-js-error-failed-to-serialize-user-into-session
-    passport.serializeUser(function (user, done) {
+    passport.serializeUser((user, done) => {
       done(null, user);
     });
   });

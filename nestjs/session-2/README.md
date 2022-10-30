@@ -159,9 +159,37 @@ AuthGuard('local') 에서 await super.logIn(request) 를 통해 passport 모듈�
 
 <br>
 
+### timeout
+
+signIn.guard.spec.ts 파일의 guard 테스트 코드에서 해당 에러가 발생했다. passport 모듈에서 request 객체의 login 함수를 호출하는데 이를 위해request 를 모킹한 객체에 logIn: jest.fn() 속성을 추가하면서 문제가 됐다. 내부 코드를 보면 promise 를 리턴해주는데 logIn: jest.fn() 으로 인해 제대로 promise 를 리턴하지 못하는 것으로 보인다. passport 모듈에서 직접 하는 동작을 그대로 두기 위해 logIn: jest.fn() 을 지우니 timeout 은 해결 됐는데 아래의 추가적인 문제가 발생했다.
+
+<br>
+
 ### req.session.regenerate is not a function
 
-signIn.guard.spec.ts 파일에서 guard 테스트를 진행하던 중 해당 에러가 발생했는데, 이는 passport 모듈의 버전을 낮춰서 해결할 수 있었다. 기존에 설치한 버전이 0.6.0 이었는데 0.5.x 으로 낮추라는 passport 모듈의 개발자가 직접 한 [답변](https://github.com/jaredhanson/passport/issues/907)이다. 
+signIn.guard.spec.ts 파일에서 guard 테스트를 진행하던 중 해당 에러가 발생했는데, 이는 passport 모듈의 버전을 낮춰서 해결할 수 있었다. 기존에 설치한 버전이 0.6.0 이었는데 0.5.x 으로 낮추라는 passport 모듈의 개발자가 직접 한 [답변](https://github.com/jaredhanson/passport/issues/907)이다.
+
+해당 에러를 해결한 뒤 아래의 에러가 추가로 발생했다.
+
+<br>
+
+### Failed to serialize user into session
+
+단위 테스트에 passport 의 serializeUser 함수가 구현되어 있지 않아서 문제가 됐다. 
+
+beforeAll 에 serializeUser 를 추가해서 해결할 수 있었고, 마침내 테스트를 통과할 수 있었다.
+
+```typescript
+  beforeAll(() => {
+    passport.use('local', new MockStrategy());
+    // https://stackoverflow.com/questions/19948816/passport-js-error-failed-to-serialize-user-into-session
+    passport.serializeUser(function (user, done) {
+      done(null, user);
+    });
+  });
+```
+
+
 
 <br>
 
