@@ -16,6 +16,14 @@ import { MockStrategy } from 'passport-mock-strategy';
 describe('SignInGuard', () => {
   let guard: SignInGuard;
 
+  beforeAll(() => {
+    passport.use('local', new MockStrategy());
+    // https://stackoverflow.com/questions/19948816/passport-js-error-failed-to-serialize-user-into-session
+    passport.serializeUser(function (user, done) {
+      done(null, user);
+    });
+  });
+
   beforeEach(() => {
     guard = new SignInGuard();
   });
@@ -25,8 +33,6 @@ describe('SignInGuard', () => {
   });
 
   it('return true', async () => {
-    passport.use('local', new MockStrategy());
-
     const httpMock = httpMocks.createRequest();
 
     const mockExecutionContext = createMock<ExecutionContext>({
