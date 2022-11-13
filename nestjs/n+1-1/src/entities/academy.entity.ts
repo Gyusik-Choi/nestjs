@@ -20,5 +20,6 @@ export class Academy {
     // eager: true,
     lazy: true,
   })
-  subject: Subject;
+  // https://typeorm.io/eager-and-lazy-relations#lazy-relations
+  subject: Promise<Subject>;
 }

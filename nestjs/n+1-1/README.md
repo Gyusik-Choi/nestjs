@@ -233,6 +233,8 @@ Academy 의 Entity 에 subject 에 대한 lazy: true 옵션을 적용했더니 N
 
 <br>
 
+https://typeorm.io
+
 https://tristy.tistory.com/36
 
 https://m.blog.naver.com/PostView.naver?isHttpsRedirect=true&blogId=wideeyed&logNo=221350638501

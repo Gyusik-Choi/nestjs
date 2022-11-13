@@ -15,12 +15,21 @@ export class AcademyService {
   ) {}
 
   async getAllAcademies(): Promise<Academy[]> {
-    const academies: Academy[] = await this.academyRepository.find();
+    // N + 1 을 피하는 방법 1
+    const academies: Academy[] = await this.academyRepository.find({
+      relations: ['subject'],
+    });
 
     for (const academy of academies) {
-      const subject = await academy.subject;
+      await academy.subject;
     }
 
     return academies;
+
+    // N + 1 을 피하는 방법 2
+    // return this.academyRepository
+    //   .createQueryBuilder('academy')
+    //   .leftJoinAndSelect('academy.subject', 'subject')
+    //   .getMany();
   }
 }
