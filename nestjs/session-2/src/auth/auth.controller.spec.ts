@@ -50,11 +50,13 @@ describe('AuthController', () => {
         password: 'Abcde12345!',
       };
 
-      jest
+      // https://stackoverflow.com/questions/61733060/unit-testing-nestjs-controller-with-injection
+      const spy = jest
         .spyOn(service, 'signUp')
         .mockResolvedValue('회원 가입에 성공했습니다');
 
       const result = await controller.signUp(signUpData);
+      expect(spy).toBeCalledTimes(1);
       expect(result).toEqual('회원 가입에 성공했습니다');
     });
   });
