@@ -6,12 +6,13 @@ import { INestApplication } from '@nestjs/common';
 import { UserAccount } from '../../src/entities/userAccount.entity';
 import { Repository } from 'typeorm';
 import { Test } from '@nestjs/testing';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from '../../src/auth/auth.module';
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { ExpressSession } from '../../src/entities/expressSession.entity';
 import { createClient } from 'redis';
 
+// npm run test:e2e test/auth/auth.e2e-spec.ts
 describe('Auth', () => {
   let app: INestApplication;
   let userRepository: Repository<UserAccount>;
@@ -19,16 +20,36 @@ describe('Auth', () => {
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [
+        // ConfigModule 로는 안 된다
+        // .forRoot() 를 추가해줘야 한다
         ConfigModule.forRoot(),
         AuthModule,
-        TypeOrmModule.forRoot({
-          type: 'mysql',
-          host: process.env.DATABASE_HOST,
-          port: parseInt(process.env.DATABASE_PORT),
-          username: process.env.DATABASE_USERNAME,
-          password: process.env.DATABASE_PASSWORD,
-          database: process.env.DATABASE_TEST_DATABASE,
-          entities: [UserAccount, ExpressSession],
+        // TypeOrmModule.forRoot({
+        //   type: 'mysql',
+        //   host: process.env.DATABASE_HOST,
+        //   port: parseInt(process.env.DATABASE_PORT),
+        //   username: process.env.DATABASE_USERNAME,
+        //   password: process.env.DATABASE_PASSWORD,
+        //   database: process.env.DATABASE_TEST_DATABASE,
+        //   entities: [UserAccount, ExpressSession],
+        // }),
+
+        // https://stackoverflow.com/questions/66193796/using-test-database-when-e2e-testing-nestjs
+        TypeOrmModule.forRootAsync({
+          imports: [ConfigModule],
+          useFactory: async (configService: ConfigService) => {
+            return {
+              type: 'mysql',
+              host: configService.get<string>('DATABASE_HOST'),
+              port: parseInt(configService.get<string>('DATABASE_PORT')),
+              username: configService.get<string>('DATABASE_USERNAME'),
+              password: configService.get<string>('DATABASE_PASSWORD'),
+              database: configService.get<string>('DATABASE_TEST_DATABASE'),
+              entities: [UserAccount, ExpressSession],
+            };
+          },
+          // https://stackoverflow.com/questions/67432760/nestjs-e2e-testing-smuggle-inject-custom-environment-variables-before-conf
+          inject: [ConfigService],
         }),
         TypeOrmModule.forFeature([UserAccount, ExpressSession]),
       ],
