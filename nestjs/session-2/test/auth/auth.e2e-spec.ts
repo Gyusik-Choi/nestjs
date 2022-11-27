@@ -102,6 +102,14 @@ describe('Auth', () => {
       .expect(201);
   });
 
+  it('/authenticate (GET)', async () => {
+    return request(app.getHttpServer())
+      .get('/auth/authenticate')
+      .set('Accept', 'application/json')
+      .send({ email: 'bill@ms.com', password: 'Abcde12345!' })
+      .expect(201);
+  });
+
   afterAll(async () => {
     await userRepository.query('DELETE FROM UserAccount');
   });
