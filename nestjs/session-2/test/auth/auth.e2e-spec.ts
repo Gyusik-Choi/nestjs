@@ -54,11 +54,16 @@ describe('Auth', () => {
         TypeOrmModule.forFeature([UserAccount, ExpressSession]),
       ],
     }).compile();
+    app = moduleRef.createNestApplication();
+    const configService = app.get<ConfigService>(ConfigService);
 
     const RedisStore = createRedisStore(session);
-    const redisHost: string = process.env.REDIS_HOST;
-    const redisPort: number = parseInt(process.env.REDIS_PORT);
+    const redisHost: string = configService.get('REDIS_HOST');
+    const redisPort: number = configService.get('REDIS_PORT');
     const redisClient = createClient({
+      // 참조한 소스 코드에서는 host, port 정보를 입력했는데
+      // 에러가 발생하길래 알고보니 url 을 입력하는 것으로 바뀌었다
+      // https://stackoverflow.com/questions/72130315/how-to-use-redis-client-in-nestjs
       url: `redis://${redisHost}:${redisPort}`,
     });
 
@@ -67,13 +72,15 @@ describe('Auth', () => {
       console.log('Connected to redis successfully'),
     );
 
-    app = moduleRef.createNestApplication();
     app.use(
       session({
         store: new RedisStore({ client: redisClient as any }),
-        secret: process.env.SESSION_SECRET,
+        secret: configService.get('SESSION_SECRET'),
         resave: false,
         saveUninitialized: false,
+        cookie: {
+          maxAge: 1,
+        },
       }),
     );
     app.use(passport.initialize());
@@ -112,5 +119,6 @@ describe('Auth', () => {
 
   afterAll(async () => {
     await userRepository.query('DELETE FROM UserAccount');
+    await userRepository.query('DELETE FROM ExpressSessions');
   });
 });
