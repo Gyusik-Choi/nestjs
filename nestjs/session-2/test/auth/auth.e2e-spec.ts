@@ -24,16 +24,6 @@ describe('Auth', () => {
         // .forRoot() 를 추가해줘야 한다
         ConfigModule.forRoot(),
         AuthModule,
-        // TypeOrmModule.forRoot({
-        //   type: 'mysql',
-        //   host: process.env.DATABASE_HOST,
-        //   port: parseInt(process.env.DATABASE_PORT),
-        //   username: process.env.DATABASE_USERNAME,
-        //   password: process.env.DATABASE_PASSWORD,
-        //   database: process.env.DATABASE_TEST_DATABASE,
-        //   entities: [UserAccount, ExpressSession],
-        // }),
-
         // https://stackoverflow.com/questions/66193796/using-test-database-when-e2e-testing-nestjs
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
@@ -54,7 +44,12 @@ describe('Auth', () => {
         TypeOrmModule.forFeature([UserAccount, ExpressSession]),
       ],
     }).compile();
+
     app = moduleRef.createNestApplication();
+    userRepository = moduleRef.get<Repository<UserAccount>>(
+      getRepositoryToken(UserAccount),
+    );
+
     const configService = app.get<ConfigService>(ConfigService);
 
     const RedisStore = createRedisStore(session);
@@ -85,10 +80,6 @@ describe('Auth', () => {
     );
     app.use(passport.initialize());
     app.use(passport.session());
-
-    userRepository = moduleRef.get<Repository<UserAccount>>(
-      getRepositoryToken(UserAccount),
-    );
 
     await app.init();
   });
