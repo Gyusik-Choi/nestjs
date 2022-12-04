@@ -56,9 +56,6 @@ describe('Auth', () => {
     const redisHost: string = configService.get('REDIS_HOST');
     const redisPort: number = configService.get('REDIS_PORT');
     const redisClient = createClient({
-      // 참조한 소스 코드에서는 host, port 정보를 입력했는데
-      // 에러가 발생하길래 알고보니 url 을 입력하는 것으로 바뀌었다
-      // https://stackoverflow.com/questions/72130315/how-to-use-redis-client-in-nestjs
       url: `redis://${redisHost}:${redisPort}`,
     });
 
