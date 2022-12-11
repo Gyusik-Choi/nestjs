@@ -29,7 +29,10 @@ export class AuthController {
   // https://techbless.github.io/2020/04/07/TypeScript에서-Passport이용시-req-user-타입-문제-해결하기/
   // https://darrengwon.tistory.com/109
   async signIn(@Req() req: SignInInterface): Promise<UserAccount> {
-    console.log(req.session);
+    // console.log(req.session);
+    // console.log(req['user']);
+    // console.log(req.isAuthenticated());
+    // console.log(req);
     // console.log(req.sessionID);
     return req.user;
   }

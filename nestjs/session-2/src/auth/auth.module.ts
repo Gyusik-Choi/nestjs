@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserAccount } from '../../src/entities/userAccount.entity';
+import { UserAccount } from '../entities/userAccount.entity';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { LocalSerializer } from './auth-helpers/local.serializer';
