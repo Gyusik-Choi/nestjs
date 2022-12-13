@@ -4,7 +4,6 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 export class AuthenticationGuard implements CanActivate {
   canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    console.log(request.user);
     return request.isAuthenticated();
   }
 }

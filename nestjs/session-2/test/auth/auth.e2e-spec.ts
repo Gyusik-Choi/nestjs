@@ -97,6 +97,7 @@ describe('Auth', () => {
       .send({ email: 'bill@ms.com', password: 'Abcde12345!' })
       .expect(201)
       .then((res) => {
+        console.log(res);
         Object.assign(user, res['_body']);
       });
   });
@@ -111,7 +112,13 @@ describe('Auth', () => {
       .set('Accept', 'application/json')
       .use((req) => {
         req['user'] = user;
-        console.log(req);
+        req['_passport'] = {
+          instance: {
+            _key: 'passport',
+            _userProperty: 'user',
+          },
+        };
+        // console.log(req);
       })
       .send({ email: 'bill@ms.com', password: 'Abcde12345!' })
       .expect(201);
