@@ -189,7 +189,17 @@ beforeAll 에 serializeUser 를 추가해서 해결할 수 있었고, 마침내 
   });
 ```
 
+<br>
 
+### e2e test
+
+#### authenticate
+
+signUp, signIn 은 통과했으나, authenticate 는 통과하지 못했었다.
+
+passport 모듈 소스코드를 살펴보면서 request 객체나 request.session 에 user 정보 등이 없는것이 원인일 것이라 생각했으나 결론은 request.header 의 Cookie 설정이었다.
+
+signIn 에서 얻은 쿠키 정보를 authenticate 요청시 Cookie 에 담아서 보내면서 해결할 수 있었다.
 
 <br>
 

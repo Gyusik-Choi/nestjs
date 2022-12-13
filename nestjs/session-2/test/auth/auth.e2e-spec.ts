@@ -87,8 +87,7 @@ describe('Auth', () => {
       .expect(201);
   });
 
-  const user = {};
-
+  let cookie;
   // https://stackoverflow.com/questions/46102336/how-can-you-chain-supertest-requests-when-one-is-dependent-on-the-other
   it('/signIn (POST)', async () => {
     return request(app.getHttpServer())
@@ -97,31 +96,23 @@ describe('Auth', () => {
       .send({ email: 'bill@ms.com', password: 'Abcde12345!' })
       .expect(201)
       .then((res) => {
-        console.log(res);
-        Object.assign(user, res['_body']);
+        cookie = res.headers['set-cookie'];
       });
   });
 
   // https://stackoverflow.com/questions/38820251/how-is-req-isauthenticated-in-passport-js-implemented
   // https://github.com/jaredhanson/passport/blob/a892b9dc54dce34b7170ad5d73d8ccfba87f4fcf/lib/passport/http/request.js#L74
-  // request 객체의 session 키에 passport: { user: ?} 프로퍼티 추가 할 수 있는 방법 찾아보기
+
+  // https://stackoverflow.com/questions/14001183/how-to-authenticate-supertest-requests-with-passport
+  // 한참을 헤맸는데 결론은 cookie 설정을 통해 해결할 수 있었다
 
   it('/authenticate (GET)', async () => {
     return request(app.getHttpServer())
       .get('/auth/authenticate')
       .set('Accept', 'application/json')
-      .use((req) => {
-        req['user'] = user;
-        req['_passport'] = {
-          instance: {
-            _key: 'passport',
-            _userProperty: 'user',
-          },
-        };
-        // console.log(req);
-      })
+      .set('Cookie', cookie)
       .send({ email: 'bill@ms.com', password: 'Abcde12345!' })
-      .expect(201);
+      .expect(200);
   });
 
   afterAll(async () => {
