@@ -115,6 +115,18 @@ describe('Auth', () => {
       .expect(200);
   });
 
+  it('/signOut (POST)', async () => {
+    return request(app.getHttpServer())
+      .post('/auth/signOut')
+      .set('Accept', 'application/json')
+      .set('Cookie', cookie)
+      .send({ email: 'bill@ms.com', password: 'Abcde12345!' })
+      .expect(201)
+      .then((res) => {
+        console.log(res);
+      });
+  });
+
   afterAll(async () => {
     await userRepository.query('DELETE FROM UserAccount');
     await userRepository.query('DELETE FROM ExpressSessions');
