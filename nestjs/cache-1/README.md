@@ -46,7 +46,11 @@ import type { ClientOpts } from 'redis';
 export class AppModule {}
 ```
 
+<br>
 
+#### store.get is not a function
+
+[이 글](https://stackoverflow.com/questions/73908197/typeerror-store-get-is-not-a-function-nestjs-cache-manager)을 참고하여 cache-manager 의 버전을 v4 대로 낮춰서 해결할 수 있었다.
 
 <br>
 
@@ -67,3 +71,7 @@ https://medium.com/zigbang/nestjs%EC%9D%98-module%EA%B3%BC-cachemodule%EC%9D%84-
 https://github.com/node-cache-manager/node-cache-manager#store-engines
 
 https://docs.nestjs.com/techniques/caching#different-stores
+
+https://stackoverflow.com/questions/73908197/typeerror-store-get-is-not-a-function-nestjs-cache-manager
+
+https://github.com/node-cache-manager/node-cache-manager/issues/210
