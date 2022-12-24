@@ -16,6 +16,7 @@ export class AppController {
     return this.appService.getHello();
   }
 
+  // https://medium.com/zigbang/nestjs%EC%9D%98-module%EA%B3%BC-cachemodule%EC%9D%84-%ED%99%9C%EC%9A%A9%ED%95%9C-redis-%EC%97%B0%EB%8F%99-2166a771196
   @Get('/cache')
   async getCache() {
     const cachedTime = await this.cacheManager.get<number>('time');
