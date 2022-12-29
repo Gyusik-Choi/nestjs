@@ -54,7 +54,17 @@ export class AppModule {}
 
 <br>
 
+### 추가 학습 해야할 부분들
 
+#### cache key 설정
+
+다양한 요청이 있을텐데 이전과 똑같은 요청이 왔는지 구분할 cache key 를 어떻게 설정해줘야 할지에 대해서 추가적인 학습이 필요하다.
+
+<br>
+
+#### cache 동기화
+
+DB 와의 동기화를 어떤 방식으로 수행할지에 대해서 추가적인 학습이 필요하다.
 
 <br>
 
@@ -75,3 +85,5 @@ https://docs.nestjs.com/techniques/caching#different-stores
 https://stackoverflow.com/questions/73908197/typeerror-store-get-is-not-a-function-nestjs-cache-manager
 
 https://github.com/node-cache-manager/node-cache-manager/issues/210
+
+https://inpa.tistory.com/entry/REDIS-%F0%9F%93%9A-%EC%BA%90%EC%8B%9CCache-%EC%84%A4%EA%B3%84-%EC%A0%84%EB%9E%B5-%EC%A7%80%EC%B9%A8-%EC%B4%9D%EC%A0%95%EB%A6%AC
