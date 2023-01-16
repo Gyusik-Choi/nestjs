@@ -49,10 +49,10 @@ async getRawAndEntities<T = any>(): Promise<{
   raw: T[]
 }> {
   try {
-  	...
-  	const results = await this.executeEntitiesAndRawResults(queryRunner)
-  	...
-  	return results;
+    ...
+    const results = await this.executeEntitiesAndRawResults(queryRunner)
+    ...
+    return results;
   } catch {
   
   } finally {
@@ -69,16 +69,17 @@ protected async executeEntitiesAndRawResults(
   // 아래 if 조건은 이해하지 못했다
   // 조건문에 따라서 rawResults 를 얻는 방법이 달라진다
   if (
-  	(this.expressionMap.skip || this.expressionMap.take) &&
+    (this.expressionMap.skip || this.expressionMap.take) &&
      this.expressionMap.joinAttributes.length > 0
   ) {
-  	// getRawMany 를 호출한다
-	rawResults = await new SelectQueryBuilder(
+    // getRawMany 를 호출한다
+    rawResults = await new SelectQueryBuilder(
   	  this.connection,
       queryRunner
-  	)
-  		...
-  		.getRawMany();
+    )
+      .select()
+  	  ...
+  	  .getRawMany();
   } else {
     // loadRawResults 를 호출한다.
 	rawResults = await this.loadRawResults(queryRunner)
@@ -88,7 +89,7 @@ protected async executeEntitiesAndRawResults(
     // RawSqlResultsToEntityTransformer 클래스의
     // transform 함수에서
     // rawResults 를 entity 로 매핑하는 작업을 수행한다
-	const transformer = new RawSqlResultsToEntityTransformer(
+    const transformer = new RawSqlResultsToEntityTransformer(
       this.expressionMap,
       this.connection.driver,
       rawRelationIdResults,
@@ -120,10 +121,10 @@ getRawMany 의 주요 함수는 loadRawResults 이고, getMany 에서도 조건�
 ```typescript
 async getRawMany<T = any>(): Promise<T[]> {
   try {
-  	...
-  	const results = await this.loadRawResults(queryRunner)
-  	...
-  	return results;
+    ...
+    const results = await this.loadRawResults(queryRunner)
+    ...
+    return results;
   } catch {
   
   } finally {
@@ -161,8 +162,8 @@ getRawMany 는 Promise< T[] > 를 리턴한다.
 @Injectable
 export class MyService {
   constructor(
-  	@InjectRepository(MyList)
-  	private readonly myListRepository: Repository<MyList>,
+    @InjectRepository(MyList)
+    private readonly myListRepository: Repository<MyList>,
   ) {}
 
   async getMyListTest(num: number) {
@@ -189,8 +190,8 @@ left join 으로 어떤 테이블을 하는지와 상관없이 left join 에 활
 @Injectable
 export class MyService {
   constructor(
-  	@InjectRepository(MyList)
-  	private readonly myListRepository: Repository<MyList>,
+   @InjectRepository(MyList)
+   private readonly myListRepository: Repository<MyList>,
   ) {}
 
   async getMyListTest(num: number) {
@@ -217,8 +218,8 @@ getRawMany 가 나타내는 리턴 타입은 Promise< any[] > 다.
 @Injectable
 export class MyService {
   constructor(
-  	@InjectRepository(MyList)
-  	private readonly myListRepository: Repository<MyList>,
+    @InjectRepository(MyList)
+    private readonly myListRepository: Repository<MyList>,
   ) {}
 
   async getMyListTest(num: number): Promise<MyList[]> {
@@ -296,12 +297,12 @@ export class YourList {
 @Injectable
 export class MyService {
   constructor(
-  	@InjectRepository(MyList)
-  	private readonly myListRepository: Repository<MyList>,
+    @InjectRepository(MyList)
+    private readonly myListRepository: Repository<MyList>,
   ) {}
 
   async test() {
-  	const result: MyList[] = await this.getMyListTest(1);
+    const result: MyList[] = await this.getMyListTest(1);
     
     // 출력 결과는 아래와 같다
     // [MyList {ListID: 1}]
@@ -341,12 +342,12 @@ test 함수에서 getMyListTest 함수를 호출한 결과물에 접근하는데
 @Injectable
 export class MyService {
   constructor(
-  	@InjectRepository(MyList)
-  	private readonly myListRepository: Repository<MyList>,
+    @InjectRepository(MyList)
+    private readonly myListRepository: Repository<MyList>,
   ) {}
 
   async test() {
-  	const result: any[] = await this.getMyListTest(1);
+    const result: any[] = await this.getMyListTest(1);
     // 결과물의 타입이 엔티티가 아니라서
     // 출력과 클라이언트는 모두 같은 결과물을 받게 된다
     // [{ListID: 1}]
@@ -380,12 +381,12 @@ getRawMany 는 배열 안에 객체 형태로 결과값이 담긴다.
 @Injectable
 export class MyService {
   constructor(
-  	@InjectRepository(MyList)
-  	private readonly myListRepository: Repository<MyList>,
+    @InjectRepository(MyList)
+    private readonly myListRepository: Repository<MyList>,
   ) {}
 
   async test() {
-  	const result: any[] = await this.getMyListTest(1);
+    const result: any[] = await this.getMyListTest(1);
     // YourList 엔티티의 컬럼은 모두 null 로 나옴에 주의
     //
     // [
@@ -427,12 +428,12 @@ getMany 에서 alias 는 적용할 수 없다.
 @Injectable
 export class MyService {
   constructor(
-  	@InjectRepository(MyList)
-  	private readonly myListRepository: Repository<MyList>,
+    @InjectRepository(MyList)
+    private readonly myListRepository: Repository<MyList>,
   ) {}
 
   async test() {
-  	const result: MyList[] = await this.getMyListTest(1);
+    const result: MyList[] = await this.getMyListTest(1);
     // 빈 배열이 출력된다
 	// []
     console.log(result)
@@ -461,12 +462,12 @@ getRawMany 는 alias 로 설정한 값으로 나온다.
 @Injectable
 export class MyService {
   constructor(
-  	@InjectRepository(MyList)
-  	private readonly myListRepository: Repository<MyList>,
+    @InjectRepository(MyList)
+    private readonly myListRepository: Repository<MyList>,
   ) {}
 
   async test() {
-  	const result: MyList[] = await this.getMyListTest(1);
+    const result: MyList[] = await this.getMyListTest(1);
     // alias 로 설정한 listID 가 나온다
     // [{listID: 1}]
     console.log(result)
