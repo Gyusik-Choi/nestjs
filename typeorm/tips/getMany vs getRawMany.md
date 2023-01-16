@@ -74,7 +74,7 @@ protected async executeEntitiesAndRawResults(
   ) {
     // getRawMany 를 호출한다
     rawResults = await new SelectQueryBuilder(
-  	  this.connection,
+      this.connection,
       queryRunner
     )
       .select()
