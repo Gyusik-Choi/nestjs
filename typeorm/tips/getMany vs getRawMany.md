@@ -79,10 +79,10 @@ protected async executeEntitiesAndRawResults(
     )
       .select()
   	  ...
-  	  .getRawMany();
+      .getRawMany();
   } else {
     // loadRawResults 를 호출한다.
-	rawResults = await this.loadRawResults(queryRunner)
+    rawResults = await this.loadRawResults(queryRunner)
   }
   
   if (rawResults.length > 0) {
