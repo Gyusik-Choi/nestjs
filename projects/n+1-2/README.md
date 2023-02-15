@@ -14,3 +14,5 @@ https://www.youtube.com/watch?v=hsSc5epPXDs
 
 https://typeorm.io/many-to-one-one-to-many-relations
 
+https://onejunu.tistory.com/35
+
