@@ -8,16 +8,22 @@ TypeORM 공식문서를 보면 getMany, getRawMany 의 차이점이 나오긴 �
 
 <br>
 
-### 소스코드
+#### 소스코드
 
-#### getMany
+0.3.12 버전 기준
+
+<br>
+
+##### getMany
 
 getMany 는 쿼리한 결과물을 entity 로 매핑하여 리턴한다.
 
 getMany 와 연관된 주요 함수는 getRawAndEntities, executeEntitiesAndRawResults 다.
 
 ```typescript
-async getMany<T = any>(): Promise<T[]> {}
+// typeorm/src/query-builder/SelectQueryBuilder.ts
+
+async getMany(): Promise<T[]> {}
 
 async getRawAndEntities<T = any>(): Promise<{
   entities: Entity[]
@@ -34,9 +40,11 @@ protected async executeEntitiesAndRawResults(
 일부 코드를 조금 더 살펴 보겠다.
 
 ```typescript
+// typeorm/src/query-builder/SelectQueryBuilder.ts
+
 async getMany<T = any>(): Promise<T[]> {
   if (this.expressionMap.lockMode === "optimistic")
-  	throw new OptimisticLockCanNotBeUsedError()
+    throw new OptimisticLockCanNotBeUsedError()
 
   // getRawAndEntities 는 entities 와 raw 를 리턴하고
   const results = await this.getRawAndEntities()
@@ -114,11 +122,13 @@ protected async executeEntitiesAndRawResults(
 
 <br>
 
-#### getRawMany
+##### getRawMany
 
 getRawMany 의 주요 함수는 loadRawResults 이고, getMany 에서도 조건에 따라서 loadRawResults  를 호출하기도 한다.
 
 ```typescript
+// typeorm/src/query-builder/SelectQueryBuilder.ts
+
 async getRawMany<T = any>(): Promise<T[]> {
   try {
     ...
@@ -143,12 +153,7 @@ protected async loadRawResults(queryRunner: QueryRunner) {
 
 <br>
 
-### 리턴 타입
-
-```typescript
-async getMany(): Promise<Entity[]> {}
-async getRawMany<T = any>(): Promise<T[]> {}
-```
+#### 리턴 타입
 
 TypeORM 소스코드를 보면 getMany 와 getRawMany 의 리턴 타입이 서로 다르다.
 
@@ -156,7 +161,14 @@ getMany 는 Promise< Entity[] > 를 리턴하고
 
 getRawMany 는 Promise< T[] > 를 리턴한다.
 
+```typescript
+async getMany(): Promise<Entity[]> {}
+async getRawMany<T = any>(): Promise<T[]> {}
+```
+
 <br>
+
+MyService 라는 서비스에서 MyList 엔티티를 YourList 와 left join 을 수행하여 getMany 를 통해 리턴하려고 한다.
 
 ```typescript
 @Injectable
@@ -186,6 +198,8 @@ left join 으로 어떤 테이블을 하는지와 상관없이 left join 에 활
 
 <br>
 
+이번에는 getMany 대신 getRawMany 를 사용한다.
+
 ```typescript
 @Injectable
 export class MyService {
@@ -212,7 +226,9 @@ getRawMany 가 나타내는 리턴 타입은 Promise< any[] > 다.
 
 <br>
 
-### Select
+#### Select
+
+select 로 MyList 엔티티의 변수를 지정할 수 있다.
 
 ```typescript
 @Injectable
@@ -237,8 +253,6 @@ export class MyService {
 }
 ```
 
-select 로 MyList 엔티티의 변수를 지정할 수 있다.
-
 다만 이때 getMany 는 ListID 외에 select 에 포함하지 않은 MyList 엔티티의 다른 컬럼 값에도 접근이 가능하다.
 
 이때 실제로는 select 에 포함되지 않아서 undefined 가 나온다.
@@ -246,6 +260,8 @@ select 로 MyList 엔티티의 변수를 지정할 수 있다.
 그리고 left join 에 활용한 YourList 엔티티의 컬럼은 결과물에 담기지 않는다.
 
 <br>
+
+MyList 엔티티 클래스는 아래와 같다.
 
 ```typescript
 @Entity('MyList')
@@ -269,6 +285,8 @@ export class MyList {
 
 <br>
 
+YourList 엔티티 클래스는 아래와 같다.
+
 ```typescript
 @Entity('YourList')
 export class YourList {
@@ -289,9 +307,11 @@ export class YourList {
 }
 ```
 
-
-
 <br>
+
+MyService 에서 test 함수를 수행한다.
+
+test 함수에서는 getMany 로 쿼리 결과를 리턴한다.
 
 ```typescript
 @Injectable
@@ -338,6 +358,10 @@ test 함수에서 getMyListTest 함수를 호출한 결과물에 접근하는데
 
 <br>
 
+MyService 에서 test 함수를 수행하는데 이번에는 getRawMany 로 쿼리 결과를 리턴한다.
+
+getRawMany 는 배열 안에 객체 형태로 결과값이 담긴다.
+
 ```typescript
 @Injectable
 export class MyService {
@@ -373,9 +397,9 @@ export class MyService {
 }
 ```
 
-getRawMany 는 배열 안에 객체 형태로 결과값이 담긴다.
-
 <br>
+
+위와 달리 아래는 select 없이 getRawMany 를 수행한다.
 
 ```typescript
 @Injectable
@@ -390,14 +414,14 @@ export class MyService {
     // YourList 엔티티의 컬럼은 모두 null 로 나옴에 주의
     //
     // [
-    //	{
-    // 	  MyList_ListNo: 1,
+    //  {
+    //    MyList_ListNo: 1,
     //    MyList_ListID: 'my id',
     //    MyList_ListName: 'my name',
     //    YourList_ListNo: null,
     //    YourList_ListID: null,
     //    YourList_ListName: null,
-  	// 	}
+  	//  }
     // ]
     console.log(result);
   }
@@ -420,7 +444,7 @@ select 를 따로 하지 않으면 MyList, YourList 컬럼 값들이 모두 나�
 
 <br>
 
-### alias
+#### alias
 
 getMany 에서 alias 는 적용할 수 없다.
 
@@ -490,6 +514,8 @@ export class MyService {
 
 <br>
 
+#### 정리
+
 getMany 는 특정 컬럼을 select 하는게 아니라 엔티티 클래스 전체의 결과물을 얻을 때 사용하면 적절할 것 같다. 물론 특정 컬럼만 select 할 때도 가능하지만 이때는 select 하지 않은 컬럼에 접근하지 않도록 주의해야 한다.
 
 특정 컬럼을 제외하고 싶다면 class-validator 등을 이용해서 별도의 클래스 인스턴스로 변환해주는 작업을 수행할 수도 있다. ~~저도 이에 대한 추가 학습이 필요합니다~~.
@@ -498,7 +524,7 @@ getRawMany 는 특정 컬럼만 select 할 때 사용하면 적절할 것 같다
 
 <br>
 
-<참고>
+####  참고
 
 https://typeorm.io/select-query-builder#getting-raw-results
 
