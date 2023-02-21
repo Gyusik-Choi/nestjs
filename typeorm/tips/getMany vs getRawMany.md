@@ -8,13 +8,13 @@ TypeORM 공식문서를 보면 getMany, getRawMany 의 차이점이 나오긴 �
 
 <br>
 
-#### 소스코드
+### 소스코드
 
 0.3.12 버전 기준
 
 <br>
 
-##### getMany
+#### getMany
 
 getMany 는 쿼리한 결과물을 entity 로 매핑하여 리턴한다.
 
@@ -122,7 +122,7 @@ protected async executeEntitiesAndRawResults(
 
 <br>
 
-##### getRawMany
+#### getRawMany
 
 getRawMany 의 주요 함수는 loadRawResults 이고, getMany 에서도 조건에 따라서 loadRawResults  를 호출하기도 한다.
 
@@ -153,7 +153,7 @@ protected async loadRawResults(queryRunner: QueryRunner) {
 
 <br>
 
-#### 리턴 타입
+### 리턴 타입
 
 TypeORM 소스코드를 보면 getMany 와 getRawMany 의 리턴 타입이 서로 다르다.
 
@@ -226,7 +226,7 @@ getRawMany 가 나타내는 리턴 타입은 Promise< any[] > 다.
 
 <br>
 
-#### Select
+### Select
 
 select 로 MyList 엔티티의 변수를 지정할 수 있다.
 
@@ -444,7 +444,7 @@ select 를 따로 하지 않으면 MyList, YourList 컬럼 값들이 모두 나�
 
 <br>
 
-#### alias
+### alias
 
 getMany 에서 alias 는 적용할 수 없다.
 
@@ -514,7 +514,7 @@ export class MyService {
 
 <br>
 
-#### 정리
+### 정리
 
 getMany 는 특정 컬럼을 select 하는게 아니라 엔티티 클래스 전체의 결과물을 얻을 때 사용하면 적절할 것 같다. 물론 특정 컬럼만 select 할 때도 가능하지만 이때는 select 하지 않은 컬럼에 접근하지 않도록 주의해야 한다.
 
@@ -524,7 +524,7 @@ getRawMany 는 특정 컬럼만 select 할 때 사용하면 적절할 것 같다
 
 <br>
 
-####  참고
+### 참고
 
 https://typeorm.io/select-query-builder#getting-raw-results
 
