@@ -1,6 +1,6 @@
-# mssql & querybuilder - random select
+# random select
 
-mssql 에서 random 으로 select 한 개를 하는 쿼리는 다음과 같다.
+sql server 에서 random 으로 select 한 개를 하는 쿼리는 다음과 같다.
 
 ```sql
 select top(1) * from A order by NewID();

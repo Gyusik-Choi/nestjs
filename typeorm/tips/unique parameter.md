@@ -1,4 +1,4 @@
-# QueryBuilder - where - unique parameter
+# unique parameter
 
 > When using the `QueryBuilder`, you need to provide unique parameters in your `WHERE` expressions. **This will not work**:
 
