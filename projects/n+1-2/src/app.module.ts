@@ -1,10 +1,13 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DbConfigModule } from './db-config/db-config.module';
+import { TeamModule } from './team/team.module';
+import { PlayerModule } from './player/player.module';
 
 @Module({
-  imports: [DbConfigModule],
+  imports: [DbConfigModule, ConfigModule.forRoot({isGlobal: true}), TeamModule, PlayerModule],
   controllers: [AppController],
   providers: [AppService],
 })
