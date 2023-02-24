@@ -5,9 +5,21 @@ import { AppService } from './app.service';
 import { DbConfigModule } from './db-config/db-config.module';
 import { TeamModule } from './team/team.module';
 import { PlayerModule } from './player/player.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { DbConfigService } from './db-config/db-config.service';
 
 @Module({
-  imports: [DbConfigModule, ConfigModule.forRoot({isGlobal: true}), TeamModule, PlayerModule],
+  imports: [
+    ConfigModule.forRoot({isGlobal: true}), 
+    DbConfigModule, 
+    TeamModule, 
+    PlayerModule,
+    TypeOrmModule.forRootAsync({
+      imports: [DbConfigModule],
+      useClass: DbConfigService,
+      inject: [DbConfigService],
+    }),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

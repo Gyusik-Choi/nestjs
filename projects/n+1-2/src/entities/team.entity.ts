@@ -1,12 +1,14 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Player } from "./player.entity";
 
-@Entity('Team')
+@Entity('team')
 export class Team {
   @PrimaryGeneratedColumn()
   Idx: number;
 
-  @OneToMany(() => Player, (player) => player.Team)
+  @OneToMany(() => Player, (player) => player.Team, {
+    eager: true,
+  })
   Players: Player[];
 
   @Column({

@@ -1,13 +1,15 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, PrimaryGeneratedColumn } from "typeorm";
 import { ManyToOne } from "typeorm/decorator/relations/ManyToOne";
 import { Team } from "./team.entity";
 
-@Entity('Player')
+@Entity('player')
 export class Player {
   @PrimaryGeneratedColumn()
   Idx: number;
 
   @ManyToOne(() => Team, (team) => team.Players)
+  // https://tristy.tistory.com/36
+  @JoinColumn([{ name: 'Idx', referencedColumnName: 'Idx'}])
   Team: Team;
 
   @Column({
