@@ -7,7 +7,7 @@ export class Team {
   Idx: number;
 
   @OneToMany(() => Player, (player) => player.Team, {
-    eager: true,
+    // eager: true,
   })
   Players: Player[];
 

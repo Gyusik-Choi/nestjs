@@ -7,7 +7,7 @@ export class TeamController {
     private readonly teamService: TeamService,
   ) {}
 
-  @Get('teams')
+  @Get()
   async getAllTeams() {
     return await this.teamService.getAllTeams();
   }

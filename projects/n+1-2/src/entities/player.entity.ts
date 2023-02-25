@@ -7,9 +7,11 @@ export class Player {
   @PrimaryGeneratedColumn()
   Idx: number;
 
-  @ManyToOne(() => Team, (team) => team.Players)
+  @ManyToOne(() => Team, (team) => team.Players, {
+    eager: true,
+  })
   // https://tristy.tistory.com/36
-  @JoinColumn([{ name: 'Idx', referencedColumnName: 'Idx'}])
+  @JoinColumn([{ name: 'Idx', referencedColumnName: 'Idx' }])
   Team: Team;
 
   @Column({
