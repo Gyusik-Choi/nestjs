@@ -7,7 +7,7 @@ import { Repository } from 'typeorm';
 export class PlayerService {
   constructor(
     @InjectRepository(Player)
-    private readonly playerRepository: Repository<Player>
+    private readonly playerRepository: Repository<Player>,
   ) {}
 
   async getAllPlayers() {
@@ -19,7 +19,7 @@ export class PlayerService {
     return await this.playerRepository.findOne({
       where: {
         Idx: id,
-      }
+      },
     });
   }
 }

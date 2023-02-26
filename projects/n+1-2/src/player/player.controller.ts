@@ -5,9 +5,7 @@ import { PlayerService } from './player.service';
 
 @Controller('player')
 export class PlayerController {
-  constructor(
-    private readonly playerService: PlayerService,
-  ) {}
+  constructor(private readonly playerService: PlayerService) {}
 
   @Get()
   async getAllPlayers() {
@@ -16,9 +14,7 @@ export class PlayerController {
 
   @Get(':id')
   @UsePipes(ParseIntPipe)
-  async getPlayer(
-    @Param('id') id: number,
-  ) {
+  async getPlayer(@Param('id') id: number) {
     return await this.playerService.getPlayer(id);
   }
 }
