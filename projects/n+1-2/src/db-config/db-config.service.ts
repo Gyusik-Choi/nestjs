@@ -20,6 +20,6 @@ export class DbConfigService implements TypeOrmOptionsFactory {
       // https://wanago.io/2022/07/11/api-with-nestjs-migrating-to-typeorm-0-3/
       entities: [Team, Player],
       logging: true,
-    }
+    };
   }
 }

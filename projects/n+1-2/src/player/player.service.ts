@@ -7,14 +7,14 @@ import { Repository } from 'typeorm';
 export class PlayerService {
   constructor(
     @InjectRepository(Player)
-    private readonly playerRepository: Repository<Player>
+    private readonly playerRepository: Repository<Player>,
   ) {}
 
   async getPlayer(id: number) {
     return await this.playerRepository.findOne({
       where: {
         Idx: id,
-      }
+      },
     });
   }
 

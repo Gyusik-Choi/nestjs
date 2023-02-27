@@ -3,9 +3,7 @@ import { TeamService } from './team.service';
 
 @Controller('team')
 export class TeamController {
-  constructor(
-    private readonly teamService: TeamService,
-  ) {}
+  constructor(private readonly teamService: TeamService) {}
 
   @Get()
   async getAllTeams() {
