@@ -8,6 +8,11 @@ export class PlayerController {
   constructor(
     private readonly playerService: PlayerService,
   ) {}
+
+  @Get('players')
+  async getAllPlayers() {
+    return await this.playerService.getAllPlayers();
+  }
   
   // http://localhost:3000/player?id=1 과 같은 요청을 보내고 싶다면
   // @Get() 에 :id 를 쓰는게 아니다!
@@ -20,10 +25,5 @@ export class PlayerController {
     @Query('id') id: number,
   ) {
     return await this.playerService.getPlayer(id);
-  }
-
-  @Get()
-  async getAllPlayers() {
-    return await this.playerService.getAllPlayers();
   }
 }

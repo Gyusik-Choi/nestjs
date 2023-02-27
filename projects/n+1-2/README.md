@@ -289,6 +289,321 @@ its inverse side Team#Players contains "eager: true" as well. Remove "eager: tru
 
 <br>
 
+### lazy loading
+
+find, findOne 모두 N + 1 쿼리 발생한다.
+
+<br>
+
+#### N + 1 쿼리 - 1
+
+Team 엔티티에 lazy: true 설정했다.
+
+```typescript
+@Entity('team')
+export class Team {
+  @PrimaryGeneratedColumn()
+  Idx: number;
+
+  @OneToMany(() => Player, (player) => player.Team, {
+    // eager: true,
+    lazy: true,
+  })
+  // Players: Player[];
+  Players: Promise<Player[]>;
+
+  @Column({
+    type: 'varchar',
+    length: 50,
+  })
+  TeamName: string;
+
+  @Column({
+    type: 'varchar',
+    length: 50,
+  })
+  Country: string;
+
+  @Column({
+    type: 'varchar',
+    length: 50,
+  })
+  League: string;
+
+  @Column({
+    type: 'varchar',
+    length: 50,
+  })
+  Region: string;
+
+  @Column({
+    type: 'varchar',
+    length: 50,
+  })
+  Stadium: string;
+}
+```
+
+<br>
+
+##### 1. Team 전체 조회시
+
+controller
+
+```typescript
+@Controller('team')
+export class TeamController {
+  constructor(private readonly teamService: TeamService) {}
+
+  @Get()
+  async getAllTeams() {
+    return await this.teamService.getAllTeams();
+  }
+}
+```
+
+<br>
+
+service
+
+```typescript
+@Injectable()
+export class TeamService {
+  constructor(
+    @InjectRepository(Team)
+    private readonly teamRepository: Repository<Team>,
+
+    @InjectRepository(Player)
+    private readonly playerRepository: Repository<Team>,
+  ) {}
+
+  async getAllTeams(): Promise<Team[]> {
+    const team: Team[] = await this.teamRepository.find();
+
+    for (const t of team) {
+      const player: Player[] = await t.Players;
+    }
+
+    return team;
+  }
+}
+```
+
+<br>
+
+쿼리 결과
+
+```sql
+-- Team 조회
+query: SELECT `Team`.`Idx` AS `Team_Idx`, `Team`.`TeamName` AS `Team_TeamName`, `Team`.`Country` AS `Team_Country`, `Team`.`League` AS `Team_League`, `Team`.`Region` AS `Team_Region`, `Team`.`Stadium` AS `Team_Stadium` FROM `team` `Team`
+
+-- 여기서부터 N+1 쿼리 발생
+-- Team 은 현재 DB에 총 2개 데이터가 있어서
+-- Team 의 데이터 갯수만큼 2번의 추가 쿼리가 발생
+query: SELECT `Players`.`Idx` AS `Players_Idx`, `Players`.`PlayerName` AS `Players_PlayerName`, `Players`.`Country` AS `Players_Country`, `Players`.`Position` AS `Players_Position`, `Players`.`BackNumber` AS `Players_BackNumber` FROM `player` `Players` WHERE `Players`.`Idx` IN (?) -- PARAMETERS: [1]
+
+query: SELECT `Players`.`Idx` AS `Players_Idx`, `Players`.`PlayerName` AS `Players_PlayerName`, `Players`.`Country` AS `Players_Country`, `Players`.`Position` AS `Players_Position`, `Players`.`BackNumber` AS `Players_BackNumber` FROM `player` `Players` WHERE `Players`.`Idx` IN (?) -- PARAMETERS: [2]
+```
+
+
+
+##### 2. 특정 Team 조회시
+
+controller
+
+```typescript
+@Controller('team')
+export class TeamController {
+  constructor(private readonly teamService: TeamService) {}
+
+  @Get()
+  @UsePipes(ParseIntPipe)
+  async getTeam(
+    @Query('id') id: number,
+  ) {
+    return await this.teamService.getTeam(id);
+  }
+}
+```
+
+<br>
+
+service
+
+```typescript
+@Injectable()
+export class TeamService {
+  constructor(
+    @InjectRepository(Team)
+    private readonly teamRepository: Repository<Team>,
+
+    @InjectRepository(Player)
+    private readonly playerRepository: Repository<Team>,
+  ) {}
+
+  async getTeam(id: number): Promise<Team> {
+    const team: Team = await this.teamRepository.findOne({
+      where: {
+        Idx: id,
+      }
+    })
+
+    await team.Players;
+
+    return team;
+  }
+}
+```
+
+<br>
+
+쿼리 결과
+
+```sql
+-- 조건에 맞는 Team 조회
+query: SELECT `Team`.`Idx` AS `Team_Idx`, `Team`.`TeamName` AS `Team_TeamName`, `Team`.`Country` AS `Team_Country`, `Team`.`League` AS `Team_League`, `Team`.`Region` AS `Team_Region`, `Team`.`Stadium` AS `Team_Stadium` FROM `team` `Team` WHERE (`Team`.`Idx` = ?) LIMIT 1 -- PARAMETERS: [1]
+
+-- 조회된 Team 의 갯수인 1개 만큼 추가 쿼리 발생
+query: SELECT `Players`.`Idx` AS `Players_Idx`, `Players`.`PlayerName` AS `Players_PlayerName`, `Players`.`Country` AS `Players_Country`, `Players`.`Position` AS `Players_Position`, `Players`.`BackNumber` AS `Players_BackNumber` FROM `player` `Players` WHERE `Players`.`Idx` IN (?) -- PARAMETERS: [1]
+```
+
+<br>
+
+#### N + 1 쿼리 - 2
+
+Player 엔티티에 lazy: true 설정했다.
+
+Team 엔티티의 경우와 마찬가지로 Player 엔티티를 조회할때도 find, findOne 모두 N + 1 쿼리 발생한다.
+
+<br>
+
+##### 1. 전체 Player 조회시
+
+controller
+
+```typescript
+@Controller('player')
+export class PlayerController {
+  constructor(
+    private readonly playerService: PlayerService,
+  ) {}
+
+  @Get()
+  async getAllPlayers() {
+    return await this.playerService.getAllPlayers();
+  }
+}
+```
+
+<br>
+
+service
+
+```typescript
+@Injectable()
+export class PlayerService {
+  constructor(
+    @InjectRepository(Player)
+    private readonly playerRepository: Repository<Player>,
+  ) {}
+
+  async getAllPlayers(): Promise<Player[]> {
+    const players: Player[] = await this.playerRepository.find();
+
+    for (const p of players) {
+      await p.Team;
+    }
+
+    return players;
+  }
+}
+```
+
+
+
+<br>
+
+쿼리 결과
+
+```sql
+query: SELECT `Player`.`Idx` AS `Player_Idx`, `Player`.`PlayerName` AS `Player_PlayerName`, `Player`.`Country` AS `Player_Country`, `Player`.`Position` AS `Player_Position`, `Player`.`BackNumber` AS `Player_BackNumber` FROM `player` `Player`
+
+query: SELECT `Team`.`Idx` AS `Team_Idx`, `Team`.`TeamName` AS `Team_TeamName`, `Team`.`Country` AS `Team_Country`, `Team`.`League` AS `Team_League`, `Team`.`Region` AS `Team_Region`, `Team`.`Stadium` AS `Team_Stadium` FROM `team` `Team` INNER JOIN `player` `Player` ON `Player`.`Idx` = `Team`.`Idx` WHERE `Player`.`Idx` IN (?) -- PARAMETERS: [1]
+
+query: SELECT `Team`.`Idx` AS `Team_Idx`, `Team`.`TeamName` AS `Team_TeamName`, `Team`.`Country` AS `Team_Country`, `Team`.`League` AS `Team_League`, `Team`.`Region` AS `Team_Region`, `Team`.`Stadium` AS `Team_Stadium` FROM `team` `Team` INNER JOIN `player` `Player` ON `Player`.`Idx` = `Team`.`Idx` WHERE `Player`.`Idx` IN (?) -- PARAMETERS: [2]
+
+query: SELECT `Team`.`Idx` AS `Team_Idx`, `Team`.`TeamName` AS `Team_TeamName`, `Team`.`Country` AS `Team_Country`, `Team`.`League` AS `Team_League`, `Team`.`Region` AS `Team_Region`, `Team`.`Stadium` AS `Team_Stadium` FROM `team` `Team` INNER JOIN `player` `Player` ON `Player`.`Idx` = `Team`.`Idx` WHERE `Player`.`Idx` IN (?) -- PARAMETERS: [3]
+
+query: SELECT `Team`.`Idx` AS `Team_Idx`, `Team`.`TeamName` AS `Team_TeamName`, `Team`.`Country` AS `Team_Country`, `Team`.`League` AS `Team_League`, `Team`.`Region` AS `Team_Region`, `Team`.`Stadium` AS `Team_Stadium` FROM `team` `Team` INNER JOIN `player` `Player` ON `Player`.`Idx` = `Team`.`Idx` WHERE `Player`.`Idx` IN (?) -- PARAMETERS: [4]
+
+query: SELECT `Team`.`Idx` AS `Team_Idx`, `Team`.`TeamName` AS `Team_TeamName`, `Team`.`Country` AS `Team_Country`, `Team`.`League` AS `Team_League`, `Team`.`Region` AS `Team_Region`, `Team`.`Stadium` AS `Team_Stadium` FROM `team` `Team` INNER JOIN `player` `Player` ON `Player`.`Idx` = `Team`.`Idx` WHERE `Player`.`Idx` IN (?) -- PARAMETERS: [5]
+```
+
+<br>
+
+##### 2. 특정 player 조회시
+
+controller
+
+```typescript
+@Controller('player')
+export class PlayerController {
+  constructor(
+    private readonly playerService: PlayerService,
+  ) {}
+
+  @Get()
+  @UsePipes(ParseIntPipe)
+  async getPlayer(
+    @Query('id') id: number,
+  ) {
+    return await this.playerService.getPlayer(id);
+  }
+}
+```
+
+
+
+<br>
+
+service
+
+```typescript
+@Injectable()
+export class PlayerService {
+  constructor(
+    @InjectRepository(Player)
+    private readonly playerRepository: Repository<Player>,
+  ) {}
+
+  async getPlayer(id: number): Promise<Player> {
+    const player: Player = await this.playerRepository.findOne({
+      where: {
+        Idx: id,
+      },
+    });
+
+    await player.Team;
+
+    return player;
+  }
+}
+```
+
+<br>
+
+쿼리 결과
+
+```sql
+query: SELECT `Player`.`Idx` AS `Player_Idx`, `Player`.`PlayerName` AS `Player_PlayerName`, `Player`.`Country` AS `Player_Country`, `Player`.`Position` AS `Player_Position`, `Player`.`BackNumber` AS `Player_BackNumber` FROM `player` `Player` WHERE (`Player`.`Idx` = ?) LIMIT 1 -- PARAMETERS: [1]
+
+query: SELECT `Team`.`Idx` AS `Team_Idx`, `Team`.`TeamName` AS `Team_TeamName`, `Team`.`Country` AS `Team_Country`, `Team`.`League` AS `Team_League`, `Team`.`Region` AS `Team_Region`, `Team`.`Stadium` AS `Team_Stadium` FROM `team` `Team` INNER JOIN `player` `Player` ON `Player`.`Idx` = `Team`.`Idx` WHERE `Player`.`Idx` IN (?) -- PARAMETERS: [1]
+```
+
+
+
+<br>
+
 <참고>
 
 https://www.youtube.com/watch?v=brE0tYOV9jQ

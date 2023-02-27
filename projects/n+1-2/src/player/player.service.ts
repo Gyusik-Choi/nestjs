@@ -10,15 +10,25 @@ export class PlayerService {
     private readonly playerRepository: Repository<Player>,
   ) {}
 
-  async getPlayer(id: number) {
-    return await this.playerRepository.findOne({
+  async getAllPlayers(): Promise<Player[]> {
+    const players: Player[] = await this.playerRepository.find();
+
+    for (const p of players) {
+      await p.Team;
+    }
+
+    return players;
+  }
+
+  async getPlayer(id: number): Promise<Player> {
+    const player: Player = await this.playerRepository.findOne({
       where: {
         Idx: id,
       },
     });
-  }
 
-  async getAllPlayers() {
-    return await this.playerRepository.find();
+    await player.Team;
+
+    return player;
   }
 }

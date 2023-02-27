@@ -8,11 +8,11 @@ export class Player {
   Idx: number;
 
   @ManyToOne(() => Team, (team) => team.Players, {
-    eager: true,
+    lazy: true,
   })
   // https://tristy.tistory.com/36
-  @JoinColumn([{ name: 'Idx', referencedColumnName: 'Idx' }])
-  Team: Team;
+  @JoinColumn([{ name: 'Idx' }])
+  Team: Promise<Team>;
 
   @Column({
     type: 'varchar',

@@ -8,8 +8,10 @@ export class Team {
 
   @OneToMany(() => Player, (player) => player.Team, {
     // eager: true,
+    lazy: true,
   })
-  Players: Player[];
+  // Players: Player[];
+  Players: Promise<Player[]>;
 
   @Column({
     type: 'varchar',
