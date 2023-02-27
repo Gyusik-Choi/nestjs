@@ -616,3 +616,4 @@ https://typeorm.io/many-to-one-one-to-many-relations
 
 https://onejunu.tistory.com/35
 
+https://ryan-han.com/post/translated/pathvariable_queryparam/
