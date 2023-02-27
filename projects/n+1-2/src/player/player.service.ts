@@ -10,16 +10,15 @@ export class PlayerService {
     private readonly playerRepository: Repository<Player>
   ) {}
 
-  async getAllPlayers() {
-    return await this.playerRepository.find();
-  }
-
   async getPlayer(id: number) {
-    console.log(id);
     return await this.playerRepository.findOne({
       where: {
         Idx: id,
       }
     });
+  }
+
+  async getAllPlayers() {
+    return await this.playerRepository.find();
   }
 }
