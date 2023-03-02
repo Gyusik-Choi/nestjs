@@ -39,6 +39,8 @@ export class TeamService {
   async getTeams(): Promise<Team[]> {
     const team: Team[] = await this.teamRepository.find({
       where: {
+        // https://typeorm.io/find-options#advanced-options
+        // https://stackoverflow.com/questions/50705276/typeorm-postgres-where-any-or-in-with-querybuilder-or-find
         Idx: In([1, 2]),
       }
     })
