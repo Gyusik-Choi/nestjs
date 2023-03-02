@@ -525,7 +525,9 @@ query: SELECT `Team`.`Idx` AS `Team_Idx`, `Team`.`TeamName` AS `Team_TeamName`, 
 
 <br>
 
-#### 반면에 findOne 은 eager loading 시 연관 관게에 있는 엔티티에 접근하면 N + 1 쿼리 발생한다
+#### findOne 도 find 처럼 eager loading 시 연관 관계에 있는 엔티티에 접근하면 N + 1 쿼리는 발생하지 않는다
+
+#### 그러나 distinct 쿼리가 발생한다
 
 entity
 
@@ -627,16 +629,16 @@ export class TeamService {
 
 쿼리 결과
 
+처음에는 N + 1 쿼리라고 생각했으나 자세히보니 N + 1 쿼리는 아니었다.
+
+Player 는 이미 첫번째 쿼리에서 left join 으로 조회가 되고 있다.
+
 ``` sql
 -- 조건에 맞는 Team 엔티티 조회 (Idx 가 1인 Team 조회)
 query: SELECT DISTINCT `distinctAlias`.`Team_Idx` AS `ids_Team_Idx` FROM (SELECT `Team`.`Idx` AS `Team_Idx`, `Team`.`TeamName` AS `Team_TeamName`, `Team`.`Country` AS `Team_Country`, `Team`.`League` AS `Team_League`, `Team`.`Region` AS `Team_Region`, `Team`.`Stadium` AS `Team_Stadium`, `Team_Players`.`Idx` AS `Team_Players_Idx`, `Team_Players`.`PlayerName` AS `Team_Players_PlayerName`, `Team_Players`.`Country` AS `Team_Players_Country`, `Team_Players`.`Position` AS `Team_Players_Position`, `Team_Players`.`BackNumber` AS `Team_Players_BackNumber` FROM `team` `Team` LEFT JOIN `player` `Team_Players` ON `Team_Players`.`Idx`=`Team`.`Idx` WHERE (`Team`.`Idx` = ?)) `distinctAlias` ORDER BY `Team_Idx` ASC LIMIT 1 -- PARAMETERS: [1]
 
--- N + 1 발생
--- 조건에 맞는 Team 의 Player 조회
 query: SELECT `Team`.`Idx` AS `Team_Idx`, `Team`.`TeamName` AS `Team_TeamName`, `Team`.`Country` AS `Team_Country`, `Team`.`League` AS `Team_League`, `Team`.`Region` AS `Team_Region`, `Team`.`Stadium` AS `Team_Stadium`, `Team_Players`.`Idx` AS `Team_Players_Idx`, `Team_Players`.`PlayerName` AS `Team_Players_PlayerName`, `Team_Players`.`Country` AS `Team_Players_Country`, `Team_Players`.`Position` AS `Team_Players_Position`, `Team_Players`.`BackNumber` AS `Team_Players_BackNumber` FROM `team` `Team` LEFT JOIN `player` `Team_Players` ON `Team_Players`.`Idx`=`Team`.`Idx` WHERE ( (`Team`.`Idx` = ?) ) AND ( `Team`.`Idx` IN (1) ) -- PARAMETERS: [1]
 ```
-
-
 
 <br>
 
@@ -955,7 +957,7 @@ query: SELECT `Team`.`Idx` AS `Team_Idx`, `Team`.`TeamName` AS `Team_TeamName`, 
 
 #### findOne select distinct
 
-
+(학습중)
 
 <br>
 
@@ -972,3 +974,7 @@ https://typeorm.io/many-to-one-one-to-many-relations
 https://onejunu.tistory.com/35
 
 https://ryan-han.com/post/translated/pathvariable_queryparam/
+
+https://devroach.tistory.com/115
+
+https://hou27.tistory.com/entry/TypeORM-select-distinct-%EC%9D%B4%EC%8A%88
