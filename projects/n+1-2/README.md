@@ -152,9 +152,9 @@ SELECT
 	`Player_Team`.`Idx` AS `Player_Team_Idx`, 
 	`Player_Team`.`TeamName` AS `Player_Team_TeamName`, 
 	`Player_Team`.`Country` AS `Player_Team_Country`,
-    `Player_Team`.`League` AS `Player_Team_League`, 
-    `Player_Team`.`Region` AS `Player_Team_Region`, 
-    `Player_Team`.`Stadium` AS `Player_Team_Stadium` 
+	`Player_Team`.`League` AS `Player_Team_League`, 
+	`Player_Team`.`Region` AS `Player_Team_Region`, 
+	`Player_Team`.`Stadium` AS `Player_Team_Stadium` 
 FROM 
 	`player` `Player` 
 LEFT JOIN 
@@ -415,7 +415,7 @@ ON
 
 <br>
 
-### eager loading 시 find 메소드는 where in 조건으로 조회하고 연관 관계의 엔티티에 접근해도  N + 1 쿼리 발생하지 않는다
+#### eager loading 시 find 메소드는 where in 조건으로 조회하고 연관 관계의 엔티티에 접근해도  N + 1 쿼리 발생하지 않는다
 
 where in 조건으로 Team 엔티티를 조회하고 각 Team 별로 연관 관계의 Player 를 조회해도 N + 1 쿼리 발생하지 않는다.
 
@@ -950,6 +950,10 @@ query: SELECT `Player`.`Idx` AS `Player_Idx`, `Player`.`PlayerName` AS `Player_P
 
 query: SELECT `Team`.`Idx` AS `Team_Idx`, `Team`.`TeamName` AS `Team_TeamName`, `Team`.`Country` AS `Team_Country`, `Team`.`League` AS `Team_League`, `Team`.`Region` AS `Team_Region`, `Team`.`Stadium` AS `Team_Stadium` FROM `team` `Team` INNER JOIN `player` `Player` ON `Player`.`Idx` = `Team`.`Idx` WHERE `Player`.`Idx` IN (?) -- PARAMETERS: [1]
 ```
+
+<br>
+
+#### findOne select distinct
 
 
 
