@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Player } from 'src/entities/player.entity';
 import { Team } from 'src/entities/team.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 @Injectable()
 export class TeamService {
@@ -14,6 +14,16 @@ export class TeamService {
     private readonly playerRepository: Repository<Team>,
   ) {}
 
+  async getAllTeams(): Promise<Team[]> {
+    const team: Team[] = await this.teamRepository.find();
+
+    for (const t of team) {
+      const players: Player[] = await t.Players;
+    }
+
+    return team;
+  }
+
   async getTeam(id: number): Promise<Team> {
     const team: Team = await this.teamRepository.findOne({
       where: {
@@ -21,13 +31,17 @@ export class TeamService {
       }
     })
 
-    await team.Players;
+    const players: Player[] = await team.Players;
 
     return team;
   }
 
-  async getAllTeams(): Promise<Team[]> {
-    const team: Team[] = await this.teamRepository.find();
+  async getTeams(): Promise<Team[]> {
+    const team: Team[] = await this.teamRepository.find({
+      where: {
+        Idx: In([1, 2]),
+      }
+    })
 
     for (const t of team) {
       const player: Player[] = await t.Players;
