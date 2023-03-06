@@ -11,16 +11,16 @@ export class TeamController {
   //   return await this.teamService.getAllTeams();
   // }
 
-  // @Get()
-  // @UsePipes(ParseIntPipe)
-  // async getTeam(
-  //   @Query('id') id: number,
-  // ): Promise<Team> {
-  //   return await this.teamService.getTeam(id);
-  // }
-
   @Get()
-  async getTeams(): Promise<Team[]> {
-    return await this.teamService.getTeams();
+  @UsePipes(ParseIntPipe)
+  async getTeam(
+    @Query('id') id: number,
+  ): Promise<Team> {
+    return await this.teamService.getTeam(id);
   }
+
+  // @Get()
+  // async getTeams(): Promise<Team[]> {
+  //   return await this.teamService.getTeams();
+  // }
 }

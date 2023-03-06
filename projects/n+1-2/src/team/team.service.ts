@@ -25,12 +25,25 @@ export class TeamService {
   }
 
   async getTeam(id: number): Promise<Team> {
-    const team: Team = await this.teamRepository.findOne({
-      where: {
-        Idx: id,
-      }
-    })
+    // const team: Team = await this.teamRepository.findOne({
+    //   where: {
+    //     Idx: id,
+    //   }
+    // })
 
+    // const players: Player[] = await team.Players;
+
+    // return team;
+
+    const team: Team = await this.teamRepository
+      .createQueryBuilder('Team')
+      // .leftJoinAndSelect(Player, 'player', 'team.Idx = player.idx')
+      // 위와 같이 작성하면 N + 1 쿼리 발생한다
+      // https://typeorm.io/select-query-builder#joining-relations
+      .leftJoinAndSelect('Team.Players', 'Player')
+      .where('Team.Idx = :id', {id: id})
+      .getOne();
+    console.log(team);
     const players: Player[] = await team.Players;
 
     return team;

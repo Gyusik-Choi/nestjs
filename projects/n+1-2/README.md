@@ -34,6 +34,122 @@
 
 <br>
 
+#### name vs referencedColumnName
+
+가장 큰 차이는 name 은 해당 엔티티의 컬럼 정보라면, referencedColumnName 은 참조할 테이블의 컬럼 정보다.
+
+<br>
+
+```typescript
+@Entity('team')
+export class Team {
+  @PrimaryGeneratedColumn()
+  Idx: number;
+
+  @OneToMany(() => Player, (player) => player.Team, {
+    eager: true,
+    // lazy: true,
+  })
+  // Players: Player[];
+  Players: Promise<Player[]>;
+
+  @Column({
+    type: 'varchar',
+    length: 50,
+  })
+  TeamName: string;
+
+  @Column({
+    type: 'varchar',
+    length: 50,
+  })
+  Country: string;
+
+  @Column({
+    type: 'varchar',
+    length: 50,
+  })
+  League: string;
+
+  @Column({
+    type: 'varchar',
+    length: 50,
+  })
+  Region: string;
+
+  @Column({
+    type: 'varchar',
+    length: 50,
+  })
+  Stadium: string;
+}
+```
+
+<br>
+
+```typescript
+import { Column, Entity, JoinColumn, PrimaryGeneratedColumn } from "typeorm";
+import { ManyToOne } from "typeorm/decorator/relations/ManyToOne";
+import { Team } from "./team.entity";
+
+@Entity('player')
+export class Player {
+  @PrimaryGeneratedColumn()
+  Idx: number;
+
+  @ManyToOne(() => Team, (team) => team.Players, {
+    lazy: true,
+  })
+  // name 속성을 지정하지 않으면
+  // Error: Unknown column 'Player.teamIdx' in 'field list' 에러가 발생한다
+  // @JoinColumn([{ name: 'Team' }])
+  Team: Promise<Team>;
+
+  @Column({
+    type: 'varchar',
+    length: 50,
+  })
+  PlayerName: string;
+
+  @Column({
+    type: 'varchar',
+    length: 50,
+  })
+  Country: string;
+
+  @Column({
+    type: 'varchar',
+    length: 50,
+  })
+  Position: string;
+
+  @Column({
+    type: 'int',
+  })
+  BackNumber: number;
+}
+```
+
+<br>
+
+name 속성을 지정하지 않으면 아래와 같은 에러가 발생한다.
+
+```sql
+-- Player.teamIdx 로 조회한다
+query failed: SELECT `Team`.`Idx` AS `Team_Idx`, `Team`.`TeamName` AS `Team_TeamName`, `Team`.`Country` AS `Team_Country`, `Team`.`League` AS `Team_League`, `Team`.`Region` AS `Team_Region`, `Team`.`Stadium` AS `Team_Stadium`, `Player`.`Idx` AS `Player_Idx`, `Player`.`PlayerName` AS `Player_PlayerName`, `Player`.`Country` AS 
+`Player_Country`, `Player`.`Position` AS `Player_Position`, `Player`.`BackNumber` AS `Player_BackNumber`, `Player`.`teamIdx` AS `Player_teamIdx` 
+FROM `team` `Team` 
+LEFT JOIN `player` `Player`
+ON `Player`.`teamIdx`=`Team`.`Idx`
+WHERE `Team`.`Idx` = ? -- PARAMETERS: [1]
+
+Error: Unknown column 'Player.teamIdx' in 'field list'
+```
+
+
+
+<br>
+
 ### eager loading
 
 #### 조회할 대상 엔티티에 eager: true 속성을 설정해야 한다.
