@@ -36,7 +36,7 @@
 
 #### name vs referencedColumnName
 
-가장 큰 차이는 name 은 해당 엔티티의 컬럼 정보라면, referencedColumnName 은 참조할 테이블의 컬럼 정보다.
+ name 은 해당 엔티티의 컬럼 정보라면, referencedColumnName 은 참조할 테이블의 컬럼 정보다.
 
 <br>
 
@@ -144,6 +144,160 @@ ON `Player`.`teamIdx`=`Team`.`Idx`
 WHERE `Team`.`Idx` = ? -- PARAMETERS: [1]
 
 Error: Unknown column 'Player.teamIdx' in 'field list'
+```
+
+<br>
+
+name 속성을 지정하지 않으면 외래키 정보를 갖는 컬럼명(첫글자는 소문자로 바꾼다)과 참조하고 있는 테이블의 기본키 컬럼명을 합쳐서 컬럼명을 잡는다.
+
+예를 들어, Team 의 기본키가 Id 이고 Team 의 Id 를 바라보는 Player 의 외래키가 Team 이면 Player.teamId 로 조회한다.
+
+아래의 에러가 발생한 상황은 Team 의 기본키가 Idx 이고 Team 의 Idx 를 바라보는 Player 의 외래키가 Team 인 경우다.
+
+```bash
+ERROR [ExceptionsHandler] Unknown column 'Player.teamIdx' in 'field list'
+QueryFailedError: Unknown column 'Player.teamIdx' in 'field list'
+```
+
+<br>
+
+에러를 해결하기 위해 JoinColumn 데코레이터에 1) name 속성을 지정하거나 2) Player 엔티티와 매핑된 DB 의 player 테이블의 Team 컬럼을 TeamIdx(teamIdx 도 가능) 로 변경한다. 그리고 Player 엔티티는 그대로 Team 으로 둔다.
+
+<br>
+
+##### 1) name 속성을 지정
+
+Player 엔티티의 Team 컬럼이 teamIdx 로 조회되지 않도록 name 속성을 설정해주면 에러가 발생하지 않는다.
+
+```typescript
+@Entity('player')
+export class Player {
+  @PrimaryGeneratedColumn()
+  Idx: number;
+
+  @ManyToOne(() => Team, (team) => team.Players, {
+    lazy: true,
+  })
+  @JoinColumn([{ name: 'Team'}])
+  Team: Promise<Team>;
+
+  @Column({
+    type: 'varchar',
+    length: 50,
+  })
+  PlayerName: string;
+
+  @Column({
+    type: 'varchar',
+    length: 50,
+  })
+  Country: string;
+
+  @Column({
+    type: 'varchar',
+    length: 50,
+  })
+  Position: string;
+
+  @Column({
+    type: 'int',
+  })
+  BackNumber: number;
+}
+
+```
+
+<br>
+
+##### referencedColumnName 을 Idx 로 해도 무방하다(안해도 된다).
+
+referencedColumnName 은 참조할 테이블의 기본키를 설정하는 값이라서 참조할 테이블의 기본키는 이미 Idx 라서 설정해도 되고 안 해도 된다.
+
+```typescript
+@Entity('player')
+export class Player {
+  @PrimaryGeneratedColumn()
+  Idx: number;
+
+  @ManyToOne(() => Team, (team) => team.Players, {
+    lazy: true,
+  })
+  @JoinColumn([{ name: 'Team', referencedColumnName: 'Idx' }])
+  Team: Promise<Team>;
+
+  @Column({
+    type: 'varchar',
+    length: 50,
+  })
+  PlayerName: string;
+
+  @Column({
+    type: 'varchar',
+    length: 50,
+  })
+  Country: string;
+
+  @Column({
+    type: 'varchar',
+    length: 50,
+  })
+  Position: string;
+
+  @Column({
+    type: 'int',
+  })
+  BackNumber: number;
+}
+```
+
+
+
+<br>
+
+##### 2) DB 테이블 컬럼명 변경 + 엔티티 그대로 유지
+
+```sql
+-- 테이블
+alter table player change Team TeamIdx int;
+```
+
+<br>
+
+```typescript
+@Entity('player')
+export class Player {
+  @PrimaryGeneratedColumn()
+  Idx: number;
+
+  @ManyToOne(() => Team, (team) => team.Players, {
+    lazy: true,
+  })
+  Team: Promise<Team>;
+
+  @Column({
+    type: 'varchar',
+    length: 50,
+  })
+  PlayerName: string;
+
+  @Column({
+    type: 'varchar',
+    length: 50,
+  })
+  Country: string;
+
+  @Column({
+    type: 'varchar',
+    length: 50,
+  })
+  Position: string;
+
+  @Column({
+    type: 'int',
+  })
+  BackNumber: number;
+}
+
 ```
 
 
