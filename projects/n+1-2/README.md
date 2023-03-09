@@ -40,6 +40,8 @@
 
 <br>
 
+Team 엔티티
+
 ```typescript
 @Entity('team')
 export class Team {
@@ -87,6 +89,8 @@ export class Team {
 
 <br>
 
+Player 엔티티
+
 ```typescript
 import { Column, Entity, JoinColumn, PrimaryGeneratedColumn } from "typeorm";
 import { ManyToOne } from "typeorm/decorator/relations/ManyToOne";
@@ -132,7 +136,44 @@ export class Player {
 
 <br>
 
-name 속성을 지정하지 않으면 아래와 같은 에러가 발생한다.
+TeamController
+
+```typescript
+@Controller('team')
+export class TeamController {
+  constructor(private readonly teamService: TeamService) {}
+
+  @Get()
+  @UsePipes(ParseIntPipe)
+  async getTeam(
+    @Query('id') id: number,
+  ): Promise<Team> {
+    return await this.teamService.getTeam(id);
+  }
+}
+```
+
+<br>
+
+TeamService
+
+```typescript
+async getTeam(id: number): Promise<Team> {
+  const team: Team = await this.teamRepository
+    .createQueryBuilder('Team')
+    .leftJoinAndSelect('Team.Players', 'Player')
+    .where('Team.Idx = :id', {id: id})
+    .getOne();
+
+  const players: Player[] = await team.Players;
+
+  return team;
+}
+```
+
+<br>
+
+위와 같이 Team 엔티티와 Player 엔티티를 left join 할 때 @JoinColumn의 name 속성을 지정하지 않으면 아래와 같은 에러가 발생한다.
 
 ```sql
 -- Player.teamIdx 로 조회한다
@@ -209,7 +250,7 @@ export class Player {
 
 <br>
 
-##### referencedColumnName 을 Idx 로 해도 무방하다(안해도 된다).
+##### referencedColumnName 을 Idx 로 해도 무방하다 (안해도 된다).
 
 referencedColumnName 은 참조할 테이블의 기본키를 설정하는 값이라서 참조할 테이블의 기본키는 이미 Idx 라서 설정해도 되고 안 해도 된다.
 
@@ -255,6 +296,8 @@ export class Player {
 <br>
 
 ##### 2) DB 테이블 컬럼명 변경 + 엔티티 그대로 유지
+
+DB player 테이블의 컬럼명은 TeamIdx, Player 엔티티의 컬럼명은 Team, 
 
 ```sql
 -- 테이블
