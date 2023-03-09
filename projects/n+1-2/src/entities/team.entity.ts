@@ -7,8 +7,8 @@ export class Team {
   Idx: number;
 
   @OneToMany(() => Player, (player) => player.Team, {
-    eager: true,
-    // lazy: true,
+    // eager: true,
+    lazy: true,
   })
   // Players: Player[];
   Players: Promise<Player[]>;

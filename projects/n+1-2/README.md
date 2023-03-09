@@ -297,7 +297,7 @@ export class Player {
 
 ##### 2) DB 테이블 컬럼명 변경 + 엔티티 그대로 유지
 
-DB player 테이블의 컬럼명은 TeamIdx, Player 엔티티의 컬럼명은 Team, 
+DB player 테이블의 컬럼명은 TeamIdx, Player 엔티티의 컬럼명은 Team, Team 엔티티의 기본키는 Idx 이라서 TeamIdx 에 대해서 Player 엔티티의 Team 과 Team 엔티티의 Idx 를 합쳐서 TeamIdx 로 player 테이블의 TeamIdx 를 조회한다.
 
 ```sql
 -- 테이블
@@ -351,7 +351,7 @@ export class Player {
 
 #### 조회할 대상 엔티티에 eager: true 속성을 설정해야 한다.
 
-Player 를 조회할때 eager: true 속성을 Player 엔티티에 설정하면 Team 엔티티의 내용까지 Left Join 으로 한번에 조회하면서 eager loading 이 적용된다.
+Player 를 조회할때 eager: true 속성을 Player 엔티티에 설정하면 Team 엔티티의 내용까지 left Join 으로 한번에 조회하면서 eager loading 이 적용된다.
 
 ```typescript
 @Entity('team')
@@ -955,6 +955,12 @@ query: SELECT `Team`.`Idx` AS `Team_Idx`, `Team`.`TeamName` AS `Team_TeamName`, 
 
 <br>
 
+#### findOne select distinct
+
+(추가 학습 필요)
+
+<br>
+
 ### lazy loading
 
 find, findOne 모두 N + 1 쿼리 발생한다.
@@ -1268,9 +1274,9 @@ query: SELECT `Team`.`Idx` AS `Team_Idx`, `Team`.`TeamName` AS `Team_TeamName`, 
 
 <br>
 
-#### findOne select distinct
+#### N + 1 쿼리 해결
 
-(학습중)
+
 
 <br>
 
