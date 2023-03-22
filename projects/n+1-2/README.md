@@ -353,6 +353,10 @@ export class Player {
 
 Player 를 조회할때 eager: true 속성을 Player 엔티티에 설정하면 Team 엔티티의 내용까지 left Join 으로 한번에 조회하면서 eager loading 이 적용된다.
 
+<br>
+
+Team 엔티티
+
 ```typescript
 @Entity('team')
 export class Team {
@@ -399,6 +403,8 @@ export class Team {
 
 <br>
 
+Player 엔티티
+
 ```typescript
 @Entity('player')
 export class Player {
@@ -439,6 +445,8 @@ export class Player {
 
 <br>
 
+PlayerService
+
 ```typescript
 @Injectable()
 export class PlayerService {
@@ -454,6 +462,8 @@ export class PlayerService {
 ```
 
 <br>
+
+쿼리 결과
 
 ```sql
 SELECT 
@@ -480,6 +490,10 @@ ON
 
 반면에 Player 엔티티가 아닌 Team 엔티티에 eager: true 를 설정하고 Player 를 조회하면 Team 을 조회하지 않는다. eager loading 이 적용되지 않았다.
 
+<br>
+
+Team 엔티티
+
 ```typescript
 @Entity('team')
 export class Team {
@@ -525,6 +539,8 @@ export class Team {
 
 <br>
 
+Player 엔티티
+
 ```typescript
 @Entity('player')
 export class Player {
@@ -565,6 +581,8 @@ export class Player {
 
 <br>
 
+PlayerService
+
 ```typescript
 @Injectable()
 export class PlayerService {
@@ -580,6 +598,8 @@ export class PlayerService {
 ```
 
 <br>
+
+쿼리 결과
 
 ```sql
 SELECT 
@@ -613,7 +633,7 @@ Team 엔티티를 eager: true 로 설정하고 조회한 결과에서 연관 관
 
 <br>
 
-entity
+Team 엔티티
 
 ```typescript
 @Entity('team')
@@ -833,7 +853,26 @@ export class TeamService {
 쿼리 결과
 
 ```sql
-query: SELECT `Team`.`Idx` AS `Team_Idx`, `Team`.`TeamName` AS `Team_TeamName`, `Team`.`Country` AS `Team_Country`, `Team`.`League` AS `Team_League`, `Team`.`Region` AS `Team_Region`, `Team`.`Stadium` AS `Team_Stadium`, `Team_Players`.`Idx` AS `Team_Players_Idx`, `Team_Players`.`PlayerName` AS `Team_Players_PlayerName`, `Team_Players`.`Country` AS `Team_Players_Country`, `Team_Players`.`Position` AS `Team_Players_Position`, `Team_Players`.`BackNumber` AS `Team_Players_BackNumber` FROM `team` `Team` LEFT JOIN `player` `Team_Players` ON `Team_Players`.`Idx`=`Team`.`Idx` WHERE (`Team`.`Idx` IN (?, ?)) -- PARAMETERS: [1,2]
+SELECT 
+	`Team`.`Idx` AS `Team_Idx`, `Team`.
+	`TeamName` AS `Team_TeamName`, 
+	`Team`.`Country` AS `Team_Country`, 
+	`Team`.`League` AS `Team_League`, 
+	`Team`.`Region` AS `Team_Region`, 
+	`Team`.`Stadium` AS `Team_Stadium`, 
+	`Team_Players`.`Idx` AS `Team_Players_Idx`, 
+	`Team_Players`.`PlayerName` AS `Team_Players_PlayerName`, 
+	`Team_Players`.`Country` AS `Team_Players_Country`, 
+	`Team_Players`.`Position` AS `Team_Players_Position`, 
+	`Team_Players`.`BackNumber` AS `Team_Players_BackNumber` 
+FROM 
+	`team` `Team` 
+LEFT JOIN 
+	`player` `Team_Players` 
+ON 
+	`Team_Players`.`Idx`=`Team`.`Idx` 
+WHERE
+	(`Team`.`Idx` IN (?, ?)) -- PARAMETERS: [1,2]
 ```
 
 <br>
@@ -1276,7 +1315,142 @@ query: SELECT `Team`.`Idx` AS `Team_Idx`, `Team`.`TeamName` AS `Team_TeamName`, 
 
 #### N + 1 쿼리 해결
 
+##### 1. leftJoinAndSelect
 
+query builder 의 leftJoinAndSelect 를 이용해서 N + 1 쿼리가 발생하지 않도록 할 수 있다.
+
+<br>
+
+엔티티
+
+```typescript
+@Entity('team')
+export class Team {
+  @PrimaryGeneratedColumn()
+  Idx: number;
+
+  @OneToMany(() => Player, (player) => player.Team, {
+    // eager: true,
+    lazy: true,
+  })
+  // Players: Player[];
+  Players: Promise<Player[]>;
+
+  @Column({
+    type: 'varchar',
+    length: 50,
+  })
+  TeamName: string;
+
+  @Column({
+    type: 'varchar',
+    length: 50,
+  })
+  Country: string;
+
+  @Column({
+    type: 'varchar',
+    length: 50,
+  })
+  League: string;
+
+  @Column({
+    type: 'varchar',
+    length: 50,
+  })
+  Region: string;
+
+  @Column({
+    type: 'varchar',
+    length: 50,
+  })
+  Stadium: string;
+}
+```
+
+<br>
+
+controller
+
+```typescript
+@Controller('team')
+export class TeamController {
+  constructor(private readonly teamService: TeamService) {}
+
+  @Get()
+  @UsePipes(ParseIntPipe)
+  async getTeam(
+    @Query('id') id: number,
+  ): Promise<Team> {
+    return await this.teamService.getTeam(id);
+  }
+}
+```
+
+<br>
+
+service
+
+```typescript
+@Injectable()
+export class TeamService {
+  constructor(
+    @InjectRepository(Team)
+    private readonly teamRepository: Repository<Team>,
+
+    @InjectRepository(Player)
+    private readonly playerRepository: Repository<Team>,
+  ) {}
+
+  async getTeam(id: number): Promise<Team> {
+    const team: Team = await this.teamRepository
+      .createQueryBuilder('Team')
+      // .leftJoinAndSelect(Player, 'player', 'team.Idx = player.idx')
+      // 위와 같이 작성하면 N + 1 쿼리 발생한다
+      // https://typeorm.io/select-query-builder#joining-relations
+      .leftJoinAndSelect('Team.Players', 'Player')
+      .where('Team.Idx = :id', {id: id})
+      .getOne();
+
+    const players: Player[] = await team.Players;
+
+    return team;
+  }
+}
+```
+
+<br>
+
+쿼리 결과
+
+```sql
+-- N + 1 쿼리가 발생하지 않는다
+SELECT 
+	`Team`.`Idx` AS `Team_Idx`, 
+	`Team`.`TeamName` AS `Team_TeamName`, 
+	`Team`.`Country` AS `Team_Country`, 
+	`Team`.`League` AS `Team_League`, 
+	`Team`.`Region` AS `Team_Region`, 
+	`Team`.`Stadium` AS `Team_Stadium`, 
+	`Player`.`Idx` AS `Player_Idx`, 
+	`Player`.`PlayerName` AS `Player_PlayerName`, 
+	`Player`.`Country` AS `Player_Country`, 
+	`Player`.`Position` AS `Player_Position`, 
+	`Player`.`BackNumber` AS `Player_BackNumber`, 
+	`Player`.`Team` AS `Player_Team` 
+FROM 
+	`team` `Team` 
+LEFT JOIN 
+	`player` `Player` 
+ON 
+	`Player`.`Team`=`Team`.`Idx` 
+WHERE 
+	`Team`.`Idx` = ? -- PARAMETERS: [1]
+```
+
+<br>
+
+##### 2.  
 
 <br>
 
