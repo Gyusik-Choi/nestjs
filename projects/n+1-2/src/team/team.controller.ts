@@ -19,8 +19,8 @@ export class TeamController {
     return await this.teamService.getTeam(id);
   }
 
-  @Get()
-  async getTeams(): Promise<Team[]> {
-    return await this.teamService.getTeams();
-  }
+  // @Get()
+  // async getTeams(): Promise<Team[]> {
+  //   return await this.teamService.getTeams();
+  // }
 }

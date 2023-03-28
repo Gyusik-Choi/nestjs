@@ -25,16 +25,27 @@ export class TeamService {
   }
 
   async getTeam(id: number): Promise<Team> {
+    // 1) 두번의 쿼리 발생 (distinct 쿼리)
     // const team: Team = await this.teamRepository.findOne({
     //   where: {
     //     Idx: id,
     //   }
     // })
-
     // const players: Player[] = await team.Players;
-
     // return team;
 
+    // 2) relations 옵션을 걸어도 마찬가지로 두번의 쿼리 발생 (distinct 쿼리)
+    // 이는 eager, lazy 모두 똑같은 결과가 나온다
+    // const team: Team = await this.teamRepository.findOne({
+    //   where: {
+    //     Idx: id
+    //   },
+    //   // relations: ['Players'],
+    // })
+    // const players: Player[] = await team.Players;
+    // return team;
+
+    // 3) 한번의 쿼리 발생
     const team: Team = await this.teamRepository
       .createQueryBuilder('Team')
       // .leftJoinAndSelect(Player, 'player', 'team.Idx = player.idx')
@@ -43,21 +54,8 @@ export class TeamService {
       .leftJoinAndSelect('Team.Players', 'Player')
       .where('Team.Idx = :id', {id: id})
       .getOne();
-    console.log(team);
     const players: Player[] = await team.Players;
-
     return team;
-
-    // const team: Team = await this.teamRepository.findOne({
-    //   where: {
-    //     Idx: id
-    //   },
-    //   relations: ['Players'],
-    // })
-    
-    // const players: Player[] = await team.Players;
-
-    // return team;
   }
 
   async getTeams(): Promise<Team[]> {

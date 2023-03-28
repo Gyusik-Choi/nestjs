@@ -975,14 +975,15 @@ export class TeamService {
 
 쿼리 결과
 
-처음에는 N + 1 쿼리라고 생각했으나 자세히보니 N + 1 쿼리는 아니었다.
+처음에는 N + 1 쿼리라고 생각했으나 자세히보니 N + 1 쿼리는 아니었다. 
 
 Player 는 이미 첫번째 쿼리에서 left join 으로 조회가 되고 있다.
 
 ``` sql
--- 조건에 맞는 Team 엔티티 조회 (Idx 가 1인 Team 조회)
+-- 첫번째 쿼리문의 FROM 절에 사용된 쿼리문이 두번째 쿼리문으로 다시 사용된다
 query: SELECT DISTINCT `distinctAlias`.`Team_Idx` AS `ids_Team_Idx` FROM (SELECT `Team`.`Idx` AS `Team_Idx`, `Team`.`TeamName` AS `Team_TeamName`, `Team`.`Country` AS `Team_Country`, `Team`.`League` AS `Team_League`, `Team`.`Region` AS `Team_Region`, `Team`.`Stadium` AS `Team_Stadium`, `Team_Players`.`Idx` AS `Team_Players_Idx`, `Team_Players`.`PlayerName` AS `Team_Players_PlayerName`, `Team_Players`.`Country` AS `Team_Players_Country`, `Team_Players`.`Position` AS `Team_Players_Position`, `Team_Players`.`BackNumber` AS `Team_Players_BackNumber` FROM `team` `Team` LEFT JOIN `player` `Team_Players` ON `Team_Players`.`Idx`=`Team`.`Idx` WHERE (`Team`.`Idx` = ?)) `distinctAlias` ORDER BY `Team_Idx` ASC LIMIT 1 -- PARAMETERS: [1]
 
+-- 첫번째 쿼리문에서 ORDER BY, LIMIT 수행한 후에 두번째 쿼리문에서는 IN 사용한다
 query: SELECT `Team`.`Idx` AS `Team_Idx`, `Team`.`TeamName` AS `Team_TeamName`, `Team`.`Country` AS `Team_Country`, `Team`.`League` AS `Team_League`, `Team`.`Region` AS `Team_Region`, `Team`.`Stadium` AS `Team_Stadium`, `Team_Players`.`Idx` AS `Team_Players_Idx`, `Team_Players`.`PlayerName` AS `Team_Players_PlayerName`, `Team_Players`.`Country` AS `Team_Players_Country`, `Team_Players`.`Position` AS `Team_Players_Position`, `Team_Players`.`BackNumber` AS `Team_Players_BackNumber` FROM `team` `Team` LEFT JOIN `player` `Team_Players` ON `Team_Players`.`Idx`=`Team`.`Idx` WHERE ( (`Team`.`Idx` = ?) ) AND ( `Team`.`Idx` IN (1) ) -- PARAMETERS: [1]
 ```
 
@@ -990,7 +991,23 @@ query: SELECT `Team`.`Idx` AS `Team_Idx`, `Team`.`TeamName` AS `Team_TeamName`, 
 
 #### findOne select distinct
 
-(추가 학습 필요)
+> [that's like pre-select query. typeorm does this because JOINs may cause multiple rows be returned for a single row in the original entity table, making it impossible to properly apply LIMIT. typeorm selects distinct ids applying limits to ids only, and then second (real select) applies WHERE id IN instead of LIMIT, so that you get both JOINs and LIMIT working properly at the same time.](https://github.com/typeorm/typeorm/issues/4998)
+
+findOne 에 where 조건을 걸면 한번으로 조회될 것이라 예상과는 달리 두번의 쿼리가 발생한다. N + 1 쿼리는 아니고 distinct 쿼리가 발생한다. 
+
+첫번째 쿼리문의 FROM 절에 사용된 쿼리문이 두번째 쿼리문에 다시 사용된다. join 이 있을 때 나타나는 현상으로 ORDER BY, LIMIT 을 통해 사전 select 를 한 후에 이후 쿼리에서 IN 으로 select 한다.
+
+<br>
+
+"join may cause multiple rows be returned for a single row in the original entity table" 문구를 보면 DB 테이블에 단일 행으로 저장된 데이터가 orm 으로 join 을 거치면 여러 행으로 결과가 나올 수 있다고 한다. 이 의미는 [이글](https://devroach.tistory.com/115) 에서 언급하는 distinct 를 하기 전의 객체의 중복과 관련 있는 내용이라 생각한다. 
+
+DB 에서 1:N 관계 테이블에 대해 inner join, left join 등을 수행하면 1:N 의 1에 해당하는 테이블의 내용은 동일한 내용이 여러번 나올 수 있다. 
+
+예를 들어 Team, Player 테이블이 1:N 관계고 Team 테이블에 (idx: 1, name: 'manchester united') 데이터 1개가 있고, Player 테이블에 (idx: 1, teamIdx: 1), (idx: 2, teamIdx: 1) 데이터 2개가 있다고 가정해보겠다.
+
+이때 Team과 Player 테이블을 left join 으로 조건을 Team 테이블의 Idx 가 1인 경우를 두면 동일한 Team 객체가 2개가 반환될 수 있다. DB 에서는 당연한 얘기지만 ORM 에서는 객체를 다루기 때문에 객체의 중복을 막기 위해 distinct 를 사용할 수 있다.
+
+TypeORM 에서는 이런 현상을 막기 위해 두번의 select 를 통해 막고 있어서 직접 확인할 수는 없지만 한번의 쿼리로 수행하기 위해서는 Query Builder 를 사용해야 한다. relations 옵션으로는 해결할 수 없다.
 
 <br>
 
@@ -1556,6 +1573,43 @@ AS `Team__Team_Players_Country`, `Team__Team_Players`.`Position` AS `Team__Team_
 query: SELECT `Team`.`Idx` AS `Team_Idx`, `Team`.`TeamName` AS `Team_TeamName`, `Team`.`Country` AS `Team_Country`, `Team`.`League` AS `Team_League`, `Team`.`Region` AS `Team_Region`, `Team`.`Stadium` AS `Team_Stadium`, `Team__Team_Players`.`Idx` AS `Team__Team_Players_Idx`, `Team__Team_Players`.`PlayerName` AS `Team__Team_Players_PlayerName`, `Team__Team_Players`.`Country` AS `Team__Team_Players_Country`, `Team__Team_Players`.`Position` AS `Team__Team_Players_Position`, `Team__Team_Players`.`BackNumber` AS `Team__Team_Players_BackNumber`, `Team__Team_Players`.`Team` AS `Team__Team_Players_Team` FROM `team` `Team` LEFT JOIN `player` `Team__Team_Players` ON `Team__Team_Players`.`Team`=`Team`.`Idx` WHERE ( (`Team`.`Idx` = ?) ) AND ( `Team`.`Idx` IN (1) ) -- PARAMETERS: [1]
 ```
 
+<br>
+
+위에서 언급한 distinct 쿼리가 추가적으로 발생했다. 이는 Query Builder 로 해결 가능하다.
+
+```typescript
+@Injectable()
+export class TeamService {
+  constructor(
+    @InjectRepository(Team)
+    private readonly teamRepository: Repository<Team>,
+
+    @InjectRepository(Player)
+    private readonly playerRepository: Repository<Team>,
+  ) {}
+
+  async getTeam(id: number): Promise<Team> {
+    const team: Team = await this.teamRepository
+      .createQueryBuilder('Team')
+      .leftJoinAndSelect('Team.Players', 'Player')
+      .where('Team.Idx = :id', {id: id})
+      .getOne();
+    const players: Player[] = await team.Players;
+    return team;
+  }
+}
+
+```
+
+<br>
+
+쿼리 결과
+
+```sql
+query: SELECT `Team`.`Idx` AS `Team_Idx`, `Team`.`TeamName` AS `Team_TeamName`, `Team`.`Country` AS `Team_Country`, `Team`.`League` AS `Team_League`, `Team`.`Region` AS `Team_Region`, `Team`.`Stadium` AS `Team_Stadium`, `Player`.`Idx` AS `Player_Idx`, `Player`.`PlayerName` AS `Player_PlayerName`, `Player`.`Country` AS `Player_Country`, `Player`.`Position` AS `Player_Position`, `Player`.`BackNumber` AS `Player_BackNumber`, `Player`.`Team` AS `Player_Team` FROM `team` `Team` LEFT JOIN 
+`player` `Player` ON `Player`.`Team`=`Team`.`Idx` WHERE `Team`.`Idx` = ? -- PARAMETERS: [1]
+```
+
 
 
 <br>
@@ -1577,3 +1631,5 @@ https://ryan-han.com/post/translated/pathvariable_queryparam/
 https://devroach.tistory.com/115
 
 https://hou27.tistory.com/entry/TypeORM-select-distinct-%EC%9D%B4%EC%8A%88
+
+https://github.com/typeorm/typeorm/issues/4998
