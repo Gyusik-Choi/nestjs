@@ -1,6 +1,6 @@
 # N + 1
 
-### 연관관계 - 테이블 vs 객체
+### 1. 연관관계 - 테이블 vs 객체
 
 > 참조를 통한 연관관계는 언제나 단방향이다. 객체간에 연관관계를 양방향으로 만들고 싶으면 반대쪽에도 필드를 추가해서 참조를 보관해야 한다. 결국 연관관계를 하나 더 만들어야 한다. 이렇게 양쪽에서 서로 참조하는 것을 양방향 연관관계라 한다. 하지만 정확히 이야기하면 이것은 양방향 관계가 아니라 서로 다른 단방향 관계 2개다. 반면에 테이블은 외래 키 하나로 양방향으로 조인할 수 있다. - 자바 ORM 표준 JPA 프로그래밍 p.166 -
 
@@ -20,17 +20,11 @@
 
 > [This code will create a `categoryId` column in the database. If you want to change this name in the database you can specify a custom join column name:](This code will create a `categoryId` column in the database. If you want to change this name in the database you can specify a custom join column name:)
 
-
-
 <br>
-
-
 
 #### @JoinColumn - referencedColumnName 
 
 > [Join columns are always a reference to some other columns (using a foreign key). By default your relation always refers to the primary column of the related entity. If you want to create relation with other columns of the related entity - you can specify them in `@JoinColumn` as well:](Join columns are always a reference to some other columns (using a foreign key). By default your relation always refers to the primary column of the related entity. If you want to create relation with other columns of the related entity - you can specify them in `@JoinColumn` as well:)
-
-
 
 <br>
 
@@ -347,7 +341,7 @@ export class Player {
 
 <br>
 
-### eager loading
+### 2. eager loading
 
 #### 조회할 대상 엔티티에 eager: true 속성을 설정해야 한다.
 
@@ -487,6 +481,8 @@ ON
 ```
 
 <br>
+
+#### 조회할 대상 엔티티가 아닌 참조할 대상 엔티티에 eager: true 속성을 설정하면 eager loading 이 적용되지 않는다.
 
 반면에 Player 엔티티가 아닌 Team 엔티티에 eager: true 를 설정하고 Player 를 조회하면 Team 을 조회하지 않는다. eager loading 이 적용되지 않았다.
 
@@ -754,7 +750,7 @@ where in 조건으로 Team 엔티티를 조회하고 각 Team 별로 연관 관�
 
 <br>
 
-엔티티
+Team 엔티티
 
 ```typescript
 @Entity('team')
@@ -803,7 +799,7 @@ export class Team {
 
 <br>
 
-controller
+TeamController
 
 ```typescript
 @Controller('team')
@@ -819,7 +815,7 @@ export class TeamController {
 
 <br>
 
-service
+TeamService
 
 ```typescript
 @Injectable()
@@ -877,11 +873,9 @@ WHERE
 
 <br>
 
-#### findOne 도 find 처럼 eager loading 시 연관 관계에 있는 엔티티에 접근하면 N + 1 쿼리는 발생하지 않는다
+#### findOne 도 find 처럼 eager loading 시 연관 관계에 있는 엔티티에 접근하면 N + 1 쿼리는 발생하지 않는다. 그러나 distinct 쿼리가 발생한다.
 
-#### 그러나 distinct 쿼리가 발생한다
-
-entity
+Team 엔티티
 
 ```typescript
 @Entity('team')
@@ -930,7 +924,7 @@ export class Team {
 
 <br>
 
-controller
+TeamController
 
 ```typescript
 @Controller('team')
@@ -949,7 +943,7 @@ export class TeamController {
 
 <br>
 
-service
+TeamService
 
 ```typescript
 @Injectable()
@@ -1000,13 +994,13 @@ query: SELECT `Team`.`Idx` AS `Team_Idx`, `Team`.`TeamName` AS `Team_TeamName`, 
 
 <br>
 
-### lazy loading
+### 3. lazy loading
 
 find, findOne 모두 N + 1 쿼리 발생한다.
 
 <br>
 
-#### N + 1 쿼리 - 1
+#### 3-1. N + 1 쿼리 - 1
 
 Team 엔티티에 lazy: true 설정했다.
 
@@ -1057,9 +1051,9 @@ export class Team {
 
 <br>
 
-##### 1. Team 전체 조회시
+##### 3-1-1. Team 전체 조회시
 
-controller
+TeamController
 
 ```typescript
 @Controller('team')
@@ -1075,7 +1069,7 @@ export class TeamController {
 
 <br>
 
-service
+TeamService
 
 ```typescript
 @Injectable()
@@ -1118,9 +1112,9 @@ query: SELECT `Players`.`Idx` AS `Players_Idx`, `Players`.`PlayerName` AS `Playe
 
 
 
-##### 2. 특정 Team 조회시
+##### 3-1-2. 특정 Team 조회시
 
-controller
+TeamController
 
 ```typescript
 @Controller('team')
@@ -1139,7 +1133,7 @@ export class TeamController {
 
 <br>
 
-service
+TeamService
 
 ```typescript
 @Injectable()
@@ -1180,7 +1174,7 @@ query: SELECT `Players`.`Idx` AS `Players_Idx`, `Players`.`PlayerName` AS `Playe
 
 <br>
 
-#### N + 1 쿼리 - 2
+#### 3-2. N + 1 쿼리 - 2
 
 Player 엔티티에 lazy: true 설정했다.
 
@@ -1188,9 +1182,9 @@ Team 엔티티의 경우와 마찬가지로 Player 엔티티를 조회할때도 
 
 <br>
 
-##### 1. 전체 Player 조회시
+##### 3-2-1. 전체 Player 조회시
 
-controller
+PlayerController
 
 ```typescript
 @Controller('player')
@@ -1208,7 +1202,7 @@ export class PlayerController {
 
 <br>
 
-service
+PlayerService
 
 ```typescript
 @Injectable()
@@ -1252,9 +1246,9 @@ query: SELECT `Team`.`Idx` AS `Team_Idx`, `Team`.`TeamName` AS `Team_TeamName`, 
 
 <br>
 
-##### 2. 특정 player 조회시
+##### 3-2-2. 특정 player 조회시
 
-controller
+PlayerController
 
 ```typescript
 @Controller('player')
@@ -1277,7 +1271,7 @@ export class PlayerController {
 
 <br>
 
-service
+PlayerService
 
 ```typescript
 @Injectable()
@@ -1313,15 +1307,15 @@ query: SELECT `Team`.`Idx` AS `Team_Idx`, `Team`.`TeamName` AS `Team_TeamName`, 
 
 <br>
 
-#### N + 1 쿼리 해결
+#### 3-3. N + 1 쿼리 해결
 
-##### 1. leftJoinAndSelect
+##### 3-3-1. leftJoinAndSelect
 
 query builder 의 leftJoinAndSelect 를 이용해서 N + 1 쿼리가 발생하지 않도록 할 수 있다.
 
 <br>
 
-엔티티
+Team 엔티티
 
 ```typescript
 @Entity('team')
@@ -1370,7 +1364,7 @@ export class Team {
 
 <br>
 
-controller
+TeamController
 
 ```typescript
 @Controller('team')
@@ -1389,7 +1383,7 @@ export class TeamController {
 
 <br>
 
-service
+TeamService
 
 ```typescript
 @Injectable()
@@ -1450,7 +1444,119 @@ WHERE
 
 <br>
 
-##### 2.  
+##### 3-3-2. relations 옵션  
+
+find 메소드에 relations 옵션을 적용한다.
+
+<br>
+
+TeamController
+
+```typescript
+@Controller('team')
+export class TeamController {
+  constructor(private readonly teamService: TeamService) {}
+
+  @Get()
+  async getTeams(): Promise<Team[]> {
+    return await this.teamService.getTeams();
+  }
+}
+```
+
+<br>
+
+TeamService
+
+```typescript
+@Injectable()
+export class TeamService {
+  constructor(
+    @InjectRepository(Team)
+    private readonly teamRepository: Repository<Team>,
+
+    @InjectRepository(Player)
+    private readonly playerRepository: Repository<Team>,
+  ) {}
+
+  async getTeams(): Promise<Team[]> {
+    const team: Team[] = await this.teamRepository.find({
+      relations: ['Players'],
+    })
+
+    for (const t of team) {
+      const player: Player[] = await t.Players;
+    }
+
+    return team;
+  }
+}
+
+```
+
+<br>
+
+findOne 메소드에 relations 옵션 적용시 distinct 쿼리가 발생한다.
+
+TeamController
+
+```typescript
+@Controller('team')
+export class TeamController {
+  constructor(private readonly teamService: TeamService) {}
+
+  @Get()
+  @UsePipes(ParseIntPipe)
+  async getTeam(
+    @Query('id') id: number,
+  ): Promise<Team> {
+    return await this.teamService.getTeam(id);
+  }
+}
+```
+
+<br>
+
+TeamService
+
+```typescript
+@Injectable()
+export class TeamService {
+  constructor(
+    @InjectRepository(Team)
+    private readonly teamRepository: Repository<Team>,
+
+    @InjectRepository(Player)
+    private readonly playerRepository: Repository<Team>,
+  ) {}
+
+  async getTeam(id: number): Promise<Team> {
+    const team: Team = await this.teamRepository.findOne({
+      where: {
+        Idx: id
+      },
+      relations: ['Players'],
+    })
+    
+    const players: Player[] = await team.Players;
+
+    return team;
+  }
+}
+```
+
+<br>
+
+쿼리 결과
+
+```sql
+query: SELECT DISTINCT `distinctAlias`.`Team_Idx` AS `ids_Team_Idx` FROM (SELECT `Team`.`Idx` AS `Team_Idx`, `Team`.`TeamName` AS `Team_TeamName`, `Team`.`Country` AS `Team_Country`, `Team`.`League` AS `Team_League`, `Team`.`Region` AS `Team_Region`, `Team`.`Stadium` AS `Team_Stadium`, `Team__Team_Players`.`Idx` AS `Team__Team_Players_Idx`, `Team__Team_Players`.`PlayerName` AS `Team__Team_Players_PlayerName`, `Team__Team_Players`.`Country` 
+AS `Team__Team_Players_Country`, `Team__Team_Players`.`Position` AS `Team__Team_Players_Position`, `Team__Team_Players`.`BackNumber` AS `Team__Team_Players_BackNumber`, `Team__Team_Players`.`Team` AS `Team__Team_Players_Team` FROM `team` `Team` LEFT JOIN `player` `Team__Team_Players` ON `Team__Team_Players`.`Team`=`Team`.`Idx` WHERE (`Team`.`Idx` = ?)) `distinctAlias` ORDER BY `Team_Idx` ASC LIMIT 1 -- PARAMETERS: [1]
+
+query: SELECT `Team`.`Idx` AS `Team_Idx`, `Team`.`TeamName` AS `Team_TeamName`, `Team`.`Country` AS `Team_Country`, `Team`.`League` AS `Team_League`, `Team`.`Region` AS `Team_Region`, `Team`.`Stadium` AS `Team_Stadium`, `Team__Team_Players`.`Idx` AS `Team__Team_Players_Idx`, `Team__Team_Players`.`PlayerName` AS `Team__Team_Players_PlayerName`, `Team__Team_Players`.`Country` AS `Team__Team_Players_Country`, `Team__Team_Players`.`Position` AS `Team__Team_Players_Position`, `Team__Team_Players`.`BackNumber` AS `Team__Team_Players_BackNumber`, `Team__Team_Players`.`Team` AS `Team__Team_Players_Team` FROM `team` `Team` LEFT JOIN `player` `Team__Team_Players` ON `Team__Team_Players`.`Team`=`Team`.`Idx` WHERE ( (`Team`.`Idx` = ?) ) AND ( `Team`.`Idx` IN (1) ) -- PARAMETERS: [1]
+```
+
+
 
 <br>
 

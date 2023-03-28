@@ -47,15 +47,27 @@ export class TeamService {
     const players: Player[] = await team.Players;
 
     return team;
+
+    // const team: Team = await this.teamRepository.findOne({
+    //   where: {
+    //     Idx: id
+    //   },
+    //   relations: ['Players'],
+    // })
+    
+    // const players: Player[] = await team.Players;
+
+    // return team;
   }
 
   async getTeams(): Promise<Team[]> {
     const team: Team[] = await this.teamRepository.find({
-      where: {
-        // https://typeorm.io/find-options#advanced-options
-        // https://stackoverflow.com/questions/50705276/typeorm-postgres-where-any-or-in-with-querybuilder-or-find
-        Idx: In([1, 2]),
-      }
+      // where: {
+      //   // https://typeorm.io/find-options#advanced-options
+      //   // https://stackoverflow.com/questions/50705276/typeorm-postgres-where-any-or-in-with-querybuilder-or-find
+      //   Idx: In([1, 2]),
+      // },
+      relations: ['Players'],
     })
 
     for (const t of team) {
