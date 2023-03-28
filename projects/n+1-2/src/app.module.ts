@@ -7,6 +7,7 @@ import { TeamModule } from './team/team.module';
 import { PlayerModule } from './player/player.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DbConfigService } from './db-config/db-config.service';
+import { CoachModule } from './coach/coach.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { DbConfigService } from './db-config/db-config.service';
       useClass: DbConfigService,
       inject: [DbConfigService],
     }),
+    CoachModule,
   ],
   controllers: [AppController],
   providers: [AppService],
