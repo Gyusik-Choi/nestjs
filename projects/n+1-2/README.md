@@ -1610,6 +1610,182 @@ query: SELECT `Team`.`Idx` AS `Team_Idx`, `Team`.`TeamName` AS `Team_TeamName`, 
 `player` `Player` ON `Player`.`Team`=`Team`.`Idx` WHERE `Team`.`Idx` = ? -- PARAMETERS: [1]
 ```
 
+<br>
+
+### 4. JPA 의 MultipleBagFetchException 에러가 TypeORM 에서는 어떻게 나타날까?
+
+JPA MultipleBagFetchException 에 대해서는 [향로](https://jojoldu.tistory.com/457) 님의 글에 자세히 설명되어 있다. 1:N 관계 중 N 의 관계에 있는 테이블이 2개 이상일때 N + 1 쿼리를 피하기 위해 1에서 N으로 (OneToMany 방향으로) fetch join 을 수행하면 MultipleBagFetchException 에러가 발생하는 현상이다. 이 경우에는 N에 해당하는 테이블이 1개까지만 가능한데 2개 이상을 조회하려고 해서 에러가 발생했다.
+
+결론적으로 TypeORM 에서는 MultipleBagFetchException 과 같은 에러가 발생하지 않았다.
+
+<br>
+
+#### 4-1. Query Builder
+
+1:N 관계로 1은 Team 엔티티, N은 Player, Coach 엔티티가 해당된다. query builder 를 통해 toMany 방향으로 lazy loading  을 수행해보았다.
+
+<br>
+
+Team 엔티티
+
+```typescript
+
+```
+
+<br>
+
+Coach 엔티티
+
+```typescript
+@Entity('coach')
+export class Coach {
+  @PrimaryGeneratedColumn()
+  Idx: number;
+
+  @ManyToOne(() => Team, (team) => team.Coach, {
+    lazy: true,
+  })
+  // https://tristy.tistory.com/36
+  // @JoinColumn([{ name: 'Idx' }])
+  // join column 을 잘못 설정했다
+  // DB 에서 player table 의 외래키로 사용하는 컬럼은 Team 이다
+  // Idx 컬럼은 Player 테이블의 AUTO_INCREMENT 되는 PRIMARY KEY 다
+  // @JoinColumn([{ name: 'Team', referencedColumnName: 'Idx' }])
+  @JoinColumn([{ name: 'Team'}])
+  Team: Promise<Team>;
+
+  @Column({
+    type: 'varchar',
+    length: 50,
+  })
+  CoachName: string;
+}
+```
+
+<br>
+
+TeamController
+
+```typescript
+@Controller('team')
+export class TeamController {
+  constructor(private readonly teamService: TeamService) {}
+
+  @Get()
+  async getTeams(): Promise<Team[]> {
+    return await this.teamService.getTeams();
+  }
+}
+
+```
+
+<br>
+
+TeamService
+
+```typescript
+@Injectable()
+export class TeamService {
+  constructor(
+    @InjectRepository(Team)
+    private readonly teamRepository: Repository<Team>,
+
+    @InjectRepository(Player)
+    private readonly playerRepository: Repository<Team>,
+  ) {}
+
+  async getTeams(): Promise<Team[]> {
+    const team: Team[] = await this.teamRepository
+      .createQueryBuilder('Team')
+      .leftJoinAndSelect('Team.Players', 'Player')
+      .leftJoinAndSelect('Team.Coach', 'Coach')
+      .getMany();
+
+    for (const t of team) {
+      const player: Player[] = await t.Players;
+      const coach: Coach[] = await t.Coach;
+    }
+    
+    return team;
+  }
+}
+
+```
+
+<br>
+
+쿼리 결과
+
+```sql
+query: 
+SELECT
+	`Team`.`Idx` AS `Team_Idx`, 
+	`Team`.`TeamName` AS `Team_TeamName`, 
+	`Team`.`Country` AS `Team_Country`, 
+	`Team`.`League` AS `Team_League`, 
+	`Team`.`Region` AS `Team_Region`, 
+	`Team`.`Stadium` AS `Team_Stadium`, 
+	`Player`.`Idx` AS `Player_Idx`, 
+	`Player`.`PlayerName` AS `Player_PlayerName`, 
+	`Player`.`Country` AS `Player_Country`, 
+	`Player`.`Position` AS `Player_Position`, 
+	`Player`.`BackNumber` AS `Player_BackNumber`, 
+	`Player`.`Team` AS `Player_Team`, 
+	`Coach`.`Idx` AS `Coach_Idx`, 
+	`Coach`.`CoachName` AS `Coach_CoachName`, 
+	`Coach`.`Team` AS `Coach_Team` 
+FROM 
+	`team` `Team` 
+LEFT JOIN 
+	`player` `Player` 
+ON 
+	`Player`.`Team`=`Team`.`Idx`  
+LEFT JOIN 
+	`coach` `Coach`
+ON 
+	`Coach`.`Team`=`Team`.`Idx`
+```
+
+<br>
+
+#### 4-2. relations
+
+이번에는 query builder 대신에 relations 옵션을 적용해보았다.
+
+<br>
+
+쿼리 결과
+
+```sql
+query: 
+SELECT 
+    `Team`.`Idx` AS `Team_Idx`, 
+    `Team`.`TeamName` AS `Team_TeamName`, 
+    `Team`.`Country` AS `Team_Country`, 
+    `Team`.`League` AS `Team_League`, 
+    `Team`.`Region` AS `Team_Region`, 
+    `Team`.`Stadium` AS `Team_Stadium`, 
+    `Team__Team_Players`.`Idx` AS `Team__Team_Players_Idx`,
+    `Team__Team_Players`.`PlayerName` AS `Team__Team_Players_PlayerName`, 
+    `Team__Team_Players`.`Country` AS `Team__Team_Players_Country`, 
+    `Team__Team_Players`.`Position` AS `Team__Team_Players_Position`, 
+    `Team__Team_Players`.`BackNumber` AS `Team__Team_Players_BackNumber`,
+    `Team__Team_Players`.`Team` AS `Team__Team_Players_Team`, 
+    `Team__Team_Coach`.`Idx` AS `Team__Team_Coach_Idx`,
+    `Team__Team_Coach`.`CoachName` AS `Team__Team_Coach_CoachName`, 
+    `Team__Team_Coach`.`Team` AS `Team__Team_Coach_Team` 
+FROM 
+	`team` `Team` 
+LEFT JOIN 
+	`player` `Team__Team_Players` 
+ON 
+	`Team__Team_Players`.`Team`=`Team`.`Idx` 
+LEFT JOIN 
+	`coach` `Team__Team_Coach`
+ON 
+	`Team__Team_Coach`.`Team`=`Team`.`Idx`
+```
+
 
 
 <br>
@@ -1633,3 +1809,5 @@ https://devroach.tistory.com/115
 https://hou27.tistory.com/entry/TypeORM-select-distinct-%EC%9D%B4%EC%8A%88
 
 https://github.com/typeorm/typeorm/issues/4998
+
+https://jojoldu.tistory.com/457

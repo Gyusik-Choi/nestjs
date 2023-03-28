@@ -15,12 +15,12 @@ import { CoachModule } from './coach/coach.module';
     DbConfigModule, 
     TeamModule, 
     PlayerModule,
+    CoachModule,
     TypeOrmModule.forRootAsync({
       imports: [DbConfigModule],
       useClass: DbConfigService,
       inject: [DbConfigService],
     }),
-    CoachModule,
   ],
   controllers: [AppController],
   providers: [AppService],

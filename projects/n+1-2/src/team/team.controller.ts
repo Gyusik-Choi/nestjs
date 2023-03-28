@@ -6,10 +6,10 @@ import { TeamService } from './team.service';
 export class TeamController {
   constructor(private readonly teamService: TeamService) {}
 
-  // @Get()
-  // async getAllTeams(): Promise<Team[]> {
-  //   return await this.teamService.getAllTeams();
-  // }
+  @Get()
+  async getAllTeams(): Promise<Team[]> {
+    return await this.teamService.getAllTeams();
+  }
 
   @Get()
   @UsePipes(ParseIntPipe)
@@ -19,8 +19,8 @@ export class TeamController {
     return await this.teamService.getTeam(id);
   }
 
-  // @Get()
-  // async getTeams(): Promise<Team[]> {
-  //   return await this.teamService.getTeams();
-  // }
+  @Get()
+  async getTeams(): Promise<Team[]> {
+    return await this.teamService.getTeams();
+  }
 }
