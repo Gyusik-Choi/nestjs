@@ -93,3 +93,5 @@ https://hoing.io/archives/5960
 https://wonyong-jang.github.io/database/2020/09/06/DB-Pagination.html
 
 https://pangtrue.tistory.com/286
+
+https://ryan-han.com/post/translated/pathvariable_queryparam/
