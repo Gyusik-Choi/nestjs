@@ -40,6 +40,36 @@ const board_entity_1 = require("../../src/entities/board.entity");
 const board_entity_1 = require("../entities/board.entity");
 ```
 
+<br>
+
+### @Param vs @Query
+
+@Param 과 @Query 에 대한 차이를 제대로 알지 못했다.
+
+@Param 은 path paramter 에 대한 값을 받을 떄 사용한다. 
+
+@Query 는 query paramter 에 대한 값을 받을 때 사용한다.
+
+<br>
+
+@Param
+
+```
+http://localhost:3000/board/search/:id
+```
+
+위처럼 가변적인 id 값을 받을 때 @Param 을 사용할 수 있다.
+
+<br>
+
+@Query
+
+```
+http://localhost:3000/board/search?pageNumber=1&pageSize=10
+```
+
+위처럼 pageNumber 와 pageSize 값에 접근하고 싶을 때 @Query 를 사용할 수 있다.
+
 
 
 <br>
