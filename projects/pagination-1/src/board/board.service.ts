@@ -3,7 +3,7 @@ import { BoardSearchRequestDTO } from './dto/boardSearchRequest.dto';
 
 @Injectable()
 export class BoardService {
-  async search(param: BoardSearchRequestDTO) {
-    console.log(param);
+  async search(queryParam: BoardSearchRequestDTO) {
+    console.log(queryParam);
   }
 }
