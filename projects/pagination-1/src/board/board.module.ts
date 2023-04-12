@@ -12,9 +12,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 // => const board_entity_1 = require("../entities/board.entity");
 //
 import { Board } from 'src/entities/board.entity';
+import { TypeORMCustomModule } from 'src/common/decorators/modules/typeorm-custom.module';
+import { BoardRepository } from './board.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Board])],
+  imports: [
+    TypeOrmModule.forFeature([Board]),
+    TypeORMCustomModule.forCustomRepository([BoardRepository])
+  ],
   controllers: [BoardController],
   providers: [BoardService]
 })
