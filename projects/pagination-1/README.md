@@ -84,7 +84,23 @@ http://localhost:3000/board/search?pageNumber=1&pageSize=10
 
 ### custom repository
 
+<br>
 
+### getManyAndCount
+
+> Executes built SQL query and returns entities and overall entities count (without limitation).
+>
+> This method is useful to build pagination.
+
+getManyAndCount 는 조건에 맞는 데이터를 조회할 뿐만 아니라 전체 데이터 갯수를 반환한다. 이때 limit 이나 offset 을 걸어서 나온 최종 데이터 갯수가 아니라 select 했을 때 나오는 전체 데이터 갯수다. 
+
+paging 함수를 작성하면서 문득 해당 테이블의 전체 데이터 갯수를 왜 반환해줘야 할까 의문이 들었다. paging 함수를 클라이언트에서 호출한다는 것 자체가 paging 방식으로 데이터를 보여주고 있기 때문에 페이지 번호를 나열해야 한다. 페이지 번호를 나열하려면 전체 데이터 갯수가 있어야 가능하다. 사실 너무 당연한 내용인데 간과하고 있었다.
+
+<br>
+
+paging 함수에서 
+
+count 는 count(*) 를 통해서 해당 테이블의 전체 row 수를 반환한다.
 
 <br>
 
