@@ -70,6 +70,10 @@ http://localhost:3000/board/search?pageNumber=1&pageSize=10
 
 위처럼 pageNumber 와 pageSize 값에 접근하고 싶을 때 @Query 를 사용할 수 있다.
 
+<br>
+
+### custom repository
+
 
 
 <br>
@@ -95,3 +99,15 @@ https://wonyong-jang.github.io/database/2020/09/06/DB-Pagination.html
 https://pangtrue.tistory.com/286
 
 https://ryan-han.com/post/translated/pathvariable_queryparam/
+
+https://gist.github.com/anchan828/9e569f076e7bc18daf21c652f7c3d012
+
+https://stackoverflow.com/questions/71557301/how-to-workraound-this-typeorm-error-entityrepository-is-deprecated-use-repo
+
+https://velog.io/@from_numpy/Nest-Custom-Repository-%EC%83%9D%EC%84%B1%EB%B6%80%ED%84%B0-%EC%A0%81%EC%9A%A9%EA%B9%8C%EC%A7%80-feat.-%ED%9A%8C%EC%9B%90%EA%B0%80%EC%9E%85-%EC%9D%B8%EC%A6%9D
+
+https://velog.io/@pk3669/typeorm-0.3.x-EntityRepository-%EB%8F%8C%EB%A0%A4%EC%A4%98
+
+https://stackoverflow.com/questions/58057916/what-does-t-extends-new-args-any-constructort-mean-in-typescr
+
+
