@@ -1,6 +1,8 @@
-import { Board } from "src/entities/board.entity";
+import { CustomRepository } from "../../src/common/decorators/custom-repository.decorator";
+import { Board } from "../../src/entities/board.entity";
 import { Repository } from "typeorm";
 
-export class BoardRepository extends Repository<Board>{
+@CustomRepository(Board)
+export class UserRepository extends Repository<Board> {
 
 }
