@@ -11,7 +11,7 @@ export class BoardSearchRequestDTO {
   private pageSize: number;
 
   getLimit(): number {
-    return this.pageNumber 
+    return this.pageSize; 
   }
 
   getOffset(): number {

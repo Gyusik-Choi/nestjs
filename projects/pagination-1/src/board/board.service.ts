@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { BoardSearchRequestDTO } from './dto/boardSearchRequest.dto';
 import { BoardRepository } from './board.repository';
 
@@ -9,6 +9,6 @@ export class BoardService {
   ) {}
 
   async search(queryParam: BoardSearchRequestDTO) {
-
+    return await this.boardRepository.paging(queryParam);
   }
 }
