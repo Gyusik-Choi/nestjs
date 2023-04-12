@@ -24,6 +24,16 @@ import { Board } from 'src/entities/board.entity';
 
 <br>
 
+그러나 절대 경로로 작성시 테스트 코드에서 에러가 발생할 수 있다.
+
+상대 경로로 바꾸기 위해서 dist 에 없는 src 를 경로에서 제외할 수 있다.
+
+```typescript
+import { Board } from "../entities/board.entity";
+```
+
+<br>
+
 서버를 실행하면 dist 에 들어있는 js 파일이 실행되는데 상대 경로로 설정하면 src 가 js 파일에 남아있게 되는데 dist 에는 src 폴더가 없기 때문에 entity 를 찾지 못하여 에러가 발생한다.
 
 상대 경로로 설정했을 경우 js 파일의 board.entity 에 대한 경로
