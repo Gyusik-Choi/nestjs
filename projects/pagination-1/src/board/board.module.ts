@@ -13,7 +13,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 //
 import { Board } from 'src/entities/board.entity';
 import { TypeORMCustomModule } from 'src/common/decorators/modules/typeorm-custom.module';
-import { BoardRepository } from './board.repository';
+import { BoardRepository } from '../repositories/board.repository';
 
 @Module({
   imports: [

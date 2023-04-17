@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { BoardSearchRequestDTO } from './dto/boardSearchRequest.dto';
-import { BoardRepository } from './board.repository';
+import { BoardRepository } from '../repositories/board.repository';
+import { Board } from '../entities/board.entity';
 
 @Injectable()
 export class BoardService {
@@ -9,6 +10,6 @@ export class BoardService {
   ) {}
 
   async search(queryParam: BoardSearchRequestDTO) {
-    return await this.boardRepository.paging(queryParam);
+    const boards: [Board[], number] = await this.boardRepository.paging(queryParam);
   }
 }
