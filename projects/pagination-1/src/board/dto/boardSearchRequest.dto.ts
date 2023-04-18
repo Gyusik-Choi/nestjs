@@ -4,11 +4,11 @@ import { IsNumber } from "class-validator";
 export class BoardSearchRequestDTO {
   @IsNumber()
   @Transform(({ value }) => parseInt(value))
-  private pageNumber: number;
+  private pageNumber: number | 1;
 
   @IsNumber()
   @Transform(({ value }) => parseInt(value))
-  private pageSize: number;
+  private pageSize: number | 10;
 
   getLimit(): number {
     return this.pageSize; 
