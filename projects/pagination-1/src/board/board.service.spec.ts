@@ -3,7 +3,9 @@ import { BoardService } from './board.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { BoardRepository } from '../repositories/board.repository';
 
-const mockBoardRepository = () => ({});
+const mockBoardRepository = () => ({
+  paging: jest.fn(),
+});
 
 describe('BoardService', () => {
   let service: BoardService;
@@ -24,5 +26,11 @@ describe('BoardService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  describe('search', () => {
+    it('search method get 1 Post item', async () => {
+
+    });
   });
 });
