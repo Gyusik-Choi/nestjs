@@ -8,7 +8,7 @@ export class Post<T> {
   pageSize: number;
   articles: T[];
 
-  constuctor(totalCount: number, pageSize: number, articles: T[]) {
+  constructor(totalCount: number, pageSize: number, articles: T[]) {
     this.totalCount = totalCount;
     this.totalPage = Math.ceil(totalCount / pageSize);
     this.pageSize = pageSize;
