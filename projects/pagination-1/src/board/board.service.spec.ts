@@ -2,6 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { BoardService } from './board.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { BoardRepository } from '../repositories/board.repository';
+import { Board } from '../entities/board.entity';
+import { BoardSearchRequestDTO } from './dto/boardSearchRequest.dto';
+import { Post } from './dto/post';
+import { BoardSearchArticleDTO } from './dto/boardSearchArticle.dto';
 
 const mockBoardRepository = () => ({
   paging: jest.fn(),
@@ -9,6 +13,7 @@ const mockBoardRepository = () => ({
 
 describe('BoardService', () => {
   let service: BoardService;
+  let boardRepository: BoardRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -22,6 +27,7 @@ describe('BoardService', () => {
     }).compile();
 
     service = module.get<BoardService>(BoardService);
+    boardRepository = module.get<BoardRepository>(BoardRepository);
   });
 
   it('should be defined', () => {
@@ -30,7 +36,36 @@ describe('BoardService', () => {
 
   describe('search', () => {
     it('search method get 1 Post item', async () => {
+      const mockResult: [Record<string, any>[], number] = [
+        [
+          { idx: 1, title: '제목1', content: '내용1' },
+          { idx: 2, title: '제목2', content: '내용2' },
+          { idx: 3, title: '제목3', content: '내용3' },
+          { idx: 4, title: '제목4', content: '내용4' },
+          { idx: 5, title: '제목5', content: '내용5' },
+          { idx: 6, title: '제목6', content: '내용6' },
+          { idx: 7, title: '제목7', content: '내용7' },
+          { idx: 8, title: '제목8', content: '내용8' },
+          { idx: 9, title: '제목9', content: '내용9' },
+          { idx: 10, title: '제목10', content: '내용10' }
+        ],
+        50000
+      ];
+      
+      const mockBoards: Board[] = mockResult[0].map(v => {
+        const board: Board = new Board();
+        board.idx = v.idx;
+        board.title = v.title;
+        board.content = v.content;
+        return board;
+      });
 
+      jest.spyOn(boardRepository, 'paging').mockResolvedValue([mockBoards, mockResult[1]]);
+      const dto: BoardSearchRequestDTO = new BoardSearchRequestDTO()
+      console.log(dto.getLimit());
+      console.log(dto.getOffset());
+      const result = await service.search(new BoardSearchRequestDTO());
+      expect(result.articles.length).toEqual(10);
     });
   });
 });
