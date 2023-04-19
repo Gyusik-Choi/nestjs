@@ -61,10 +61,11 @@ describe('BoardService', () => {
       });
 
       jest.spyOn(boardRepository, 'paging').mockResolvedValue([mockBoards, mockResult[1]]);
-      const dto: BoardSearchRequestDTO = new BoardSearchRequestDTO()
-      console.log(dto.getLimit());
-      console.log(dto.getOffset());
+
       const result = await service.search(new BoardSearchRequestDTO());
+      expect(result.totalCount).toEqual(50000);
+      expect(result.totalPage).toEqual(5000);
+      expect(result.pageSize).toEqual(10);
       expect(result.articles.length).toEqual(10);
     });
   });
