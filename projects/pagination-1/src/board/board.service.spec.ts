@@ -35,7 +35,7 @@ describe('BoardService', () => {
   });
 
   describe('search', () => {
-    it('search method get 1 Post item', async () => {
+    it('search method get 10 Post item', async () => {
       const mockResult: [Record<string, any>[], number] = [
         [
           { idx: 1, title: '제목1', content: '내용1' },

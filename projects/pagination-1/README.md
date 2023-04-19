@@ -82,10 +82,6 @@ http://localhost:3000/board/search?pageNumber=1&pageSize=10
 
 <br>
 
-### custom repository
-
-<br>
-
 ### getManyAndCount
 
 > Executes built SQL query and returns entities and overall entities count (without limitation).
@@ -101,6 +97,30 @@ paging 함수를 작성하면서 문득 해당 테이블의 전체 데이터 갯
 paging 함수에서 
 
 count 는 count(*) 를 통해서 해당 테이블의 전체 row 수를 반환한다.
+
+<br>
+
+### DTO 에 default 값 설정
+
+BoardService 의 search 메소드에 대한 unit test 를 수행할때 BoardSearchRequestDTO 가 필요한데 BoardSearchRequestDTO 의 필드들은 private 으로 선언되어 있다. 해당 DTO 는 생성자로 private 필드값을 주입할 수 없어서 필드들의 값을 실제 호출할 때가 아니면 설정하기가 까다롭다.
+
+default 값이 따로 없으면 private 필드들의 값이 제대로 설정되지 않아서 원하는 값을 얻기 어려운데 default 값을 설정할 수 있는 방법이 존재했다. 아래와 같이 변수에 값을 할당해주면 해당 값이 default 값이 된다. 실제 호출시 해당 DTO 의 value 값을 설정해주면 설정한 값으로 덮이고 설정하지 않으면 default 값으로 설정된다.
+
+```typescript
+export class FooDTO {
+	@IsNumber()
+  	private value: number = 1;
+}
+
+```
+
+
+
+<br>
+
+### custom repository
+
+(추가 예정)
 
 <br>
 
@@ -136,4 +156,5 @@ https://velog.io/@pk3669/typeorm-0.3.x-EntityRepository-%EB%8F%8C%EB%A0%A4%EC%A4
 
 https://stackoverflow.com/questions/58057916/what-does-t-extends-new-args-any-constructort-mean-in-typescr
 
+https://stackoverflow.com/questions/73080334/how-to-set-default-values-on-dto-nestjs
 
