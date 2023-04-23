@@ -4,8 +4,6 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { BoardRepository } from '../repositories/board.repository';
 import { Board } from '../entities/board.entity';
 import { BoardSearchRequestDTO } from './dto/boardSearchRequest.dto';
-import { Post } from './dto/post';
-import { BoardSearchArticleDTO } from './dto/boardSearchArticle.dto';
 
 const mockBoardRepository = () => ({
   paging: jest.fn(),
@@ -22,7 +20,7 @@ describe('BoardService', () => {
         {
           provide: getRepositoryToken(BoardRepository),
           useValue: mockBoardRepository(),
-        }
+        },
       ],
     }).compile();
 
@@ -47,12 +45,12 @@ describe('BoardService', () => {
           { idx: 7, title: '제목7', content: '내용7' },
           { idx: 8, title: '제목8', content: '내용8' },
           { idx: 9, title: '제목9', content: '내용9' },
-          { idx: 10, title: '제목10', content: '내용10' }
+          { idx: 10, title: '제목10', content: '내용10' },
         ],
-        50000
+        50000,
       ];
-      
-      const mockBoards: Board[] = mockResult[0].map(v => {
+
+      const mockBoards: Board[] = mockResult[0].map((v) => {
         const board: Board = new Board();
         board.idx = v.idx;
         board.title = v.title;
@@ -60,7 +58,9 @@ describe('BoardService', () => {
         return board;
       });
 
-      jest.spyOn(boardRepository, 'paging').mockResolvedValue([mockBoards, mockResult[1]]);
+      jest
+        .spyOn(boardRepository, 'paging')
+        .mockResolvedValue([mockBoards, mockResult[1]]);
 
       const result = await service.search(new BoardSearchRequestDTO());
       expect(result.totalCount).toEqual(50000);
