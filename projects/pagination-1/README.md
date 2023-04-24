@@ -141,7 +141,7 @@ board 테이블의 경우 idx 는 primary key 라서 클러스터링 인덱스�
 
 select 문에는 인덱스로 지정된 컬럼인 idx, title 만을 포함해서 쿼리를 실행했고, 커버링 인덱스가 활용됐음을 알 수 있다.
 
-![covering index](images/covering index.PNG)
+![covering_index](images/covering_index.PNG)
 
 <br>
 
@@ -152,7 +152,7 @@ explain select idx, title from board limit 10 offset 30000;
 
 title 컬럼에 대한 인덱스를 제거하고 동일한 select 문을 실행하면 Extra 에는 null 이 나온다.
 
-![non covering index](images/non covering index.PNG)
+![non_covering_index](images/non_covering_index.PNG)
 
 <br>
 
