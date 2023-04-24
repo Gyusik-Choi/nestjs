@@ -124,6 +124,38 @@ export class FooDTO {
 
 <br>
 
+### 커버링 인덱스 (Using index)
+
+> [데이터 파일을 전혀 읽지 않고 인덱스만 읽어서 쿼리를 모두 처리할 수 있을 때 Extra 칼럼에 "Using index" 가 표시된다](https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=278488709)
+
+인덱스만을 이용해서 쿼리를 처리할 수 있는 인덱스를 커버링 인덱스라고 한다. 인덱스를 이용해서 조건에 맞는 정보들을 찾은 후 추가적인 컬럼 값도 가져와야 하는 경우에 이 정보들을 바탕으로 데이터 파일에 접근해야 하는데 커버링 인덱스의 경우 데이터 파일에 접근해야 할 필요가 없다. 이를 통해 빠른 처리가 가능하다.
+
+<br>
+
+```sql
+create index idx_title on board (title);
+explain select idx, title from board limit 10 offset 30000;
+```
+
+board 테이블의 경우 idx 는 primary key 라서 클러스터링 인덱스가 자동으로 적용되어 있기 때문에 title 컬럼에 대해서 인덱스를 설정했다.
+
+select 문에는 인덱스로 지정된 컬럼인 idx, title 만을 포함해서 쿼리를 실행했고, 커버링 인덱스가 활용됐음을 알 수 있다.
+
+![covering index](images/covering index.PNG)
+
+<br>
+
+```sql
+alter table board drop index idx_title;
+explain select idx, title from board limit 10 offset 30000;
+```
+
+title 컬럼에 대한 인덱스를 제거하고 동일한 select 문을 실행하면 Extra 에는 null 이 나온다.
+
+![non covering index](images/non covering index.PNG)
+
+<br>
+
 <참고>
 
 https://ganzicoder.tistory.com/156
@@ -158,3 +190,4 @@ https://stackoverflow.com/questions/58057916/what-does-t-extends-new-args-any-co
 
 https://stackoverflow.com/questions/73080334/how-to-set-default-values-on-dto-nestjs
 
+[Real MySQL 8.0 1권](https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=278488709)
