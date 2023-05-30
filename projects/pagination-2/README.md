@@ -1,2 +1,161 @@
 # Pagination - 2
 
+### forRootAsync
+
+NestJS 에서 TypeORM 사용을 위해 NestJS 자체에서 TypeOrmModule 을 제공한다. DB 연결도 TypeOrmModule 의 메소드를 이용해서 할 수 있다. 
+
+<br>
+
+TypeOrmModule 의 forRoot 메소드가 동기적인 방법으로 DB 연결을 수행한다면 forRootAsync 메소드는 비동기적으로 DB 연결을 수행할 수 있다.
+
+forRoot
+
+> The `forRoot()` method supports all the configuration properties exposed by the `DataSource` constructor from the [TypeORM](https://typeorm.io/data-source-options#common-data-source-options) package. In addition, there are several extra configuration properties described below.
+
+<br>
+
+forRootAsync
+
+> You may want to pass your repository module options asynchronously instead of statically. In this case, use the `forRootAsync()` method, which provides several ways to deal with async configuration.
+
+<br>
+
+```typescript
+// nestjs 의 typeorm 패키지
+// lib/typeorm.module.ts
+@Module({})
+export class TypeOrmModule {
+  static forRoot(options?: TypeOrmModuleOptions): DynamicModule {
+    return {
+      module: TypeOrmModule,
+      imports: [TypeOrmCoreModule.forRoot(options)],
+    };
+  }
+
+  static forRootAsync(options: TypeOrmModuleAsyncOptions): DynamicModule {
+    return {
+      module: TypeOrmModule,
+      imports: [TypeOrmCoreModule.forRootAsync(options)],
+    };
+  }
+}
+```
+
+forRootAsync 메소드는 TypeOrmModule 에 선언된 정적 메소드인데 DynamicModule 타입의 객체를 리턴한다(참고로 TypeOrmModule 은 nestjs 의 nest 패키지가 아니라 nestjs 의 typeorm 패키지에 존재한다).
+
+imports 키는 값으로 TypeOrmCoreModule 의 forRootAsync 의 결과물을 배열로 감싸고 있다. forRootAsync 는 내부 동작에서 useFactory 키를 포함하는데 useFactory 키의 값은 비동기 연산이 포함된다. 따라서 forRootAsync 메소드는 기본적으로 비동기로 동작할 수 밖에 없다.
+
+<br>
+
+```typescript
+// nestjs 의 typeorm 패키지
+// lib/typeorm-core.module.ts
+@Global()
+@Module({})
+export class TypeOrmCoreModule implements OnApplicationShutdown {
+  private readonly logger = new Logger('TypeOrmModule');
+
+  constructor(
+    @Inject(TYPEORM_MODULE_OPTIONS)
+    private readonly options: TypeOrmModuleOptions,
+    private readonly moduleRef: ModuleRef,
+  ) {}
+
+  static forRootAsync(options: TypeOrmModuleAsyncOptions): DynamicModule {
+    // 생략
+    const asyncProviders = this.createAsyncProviders(options);
+    const providers = [
+      ...asyncProviders,
+      entityManagerProvider,
+      dataSourceProvider,
+      {
+        provide: TYPEORM_MODULE_ID,
+        useValue: generateString(),
+      },
+      ...(options.extraProviders || []),
+    ];
+    // 생략
+
+    return {
+      module: TypeOrmCoreModule,
+      imports: options.imports,
+      providers,
+      exports,
+    };
+  }
+
+  // options 의 키에 관계없이 모두 createAsyncOptionsProvider 메소드를 호출한다
+  private static createAsyncProviders(
+    options: TypeOrmModuleAsyncOptions,
+  ): Provider[] {
+    if (options.useExisting || options.useFactory) {
+      return [this.createAsyncOptionsProvider(options)];
+    }
+    const useClass = options.useClass as Type<TypeOrmOptionsFactory>;
+    return [
+      this.createAsyncOptionsProvider(options),
+      {
+        provide: useClass,
+        useClass,
+      },
+    ];
+  }
+
+  // options 의 옵션에 관계없이 useFactory 키를 포함하게 된다
+  // useFactory 의 반환값은 Promise 라 비동기로 동작한다.
+  // (useFactory 반환값은 아래의 TypeOrmModuleAsyncOptions 관련 코드 블록 참고)
+  private static createAsyncOptionsProvider(
+    options: TypeOrmModuleAsyncOptions,
+  ): Provider {
+    if (options.useFactory) {
+      return {
+        provide: TYPEORM_MODULE_OPTIONS,
+        useFactory: options.useFactory,
+        inject: options.inject || [],
+      };
+    }
+    // `as Type<TypeOrmOptionsFactory>` is a workaround for microsoft/TypeScript#31603
+    const inject = [
+      (options.useClass || options.useExisting) as Type<TypeOrmOptionsFactory>,
+    ];
+    return {
+      provide: TYPEORM_MODULE_OPTIONS,
+      useFactory: async (optionsFactory: TypeOrmOptionsFactory) =>
+        await optionsFactory.createTypeOrmOptions(options.name),
+      inject,
+    };
+  }
+}
+
+```
+
+<br>
+
+```typescript
+// nestjs 의 typeorm 패키지
+// lib/interfaces/typeorm-options.interface.ts
+export interface TypeOrmModuleAsyncOptions
+  extends Pick<ModuleMetadata, 'imports'> {
+  name?: string;
+  useExisting?: Type<TypeOrmOptionsFactory>;
+  useClass?: Type<TypeOrmOptionsFactory>;
+  // useFactory 는 Promise 타입을 반환한다
+  useFactory?: (
+    ...args: any[]
+  ) => Promise<TypeOrmModuleOptions> | TypeOrmModuleOptions;
+  dataSourceFactory?: TypeOrmDataSourceFactory;
+  inject?: any[];
+  extraProviders?: Provider[];
+}
+
+```
+
+
+
+<br>
+
+<참고>
+
+https://docs.nestjs.com/techniques/database
+
+https://docs.nestjs.com/techniques/database#async-configuration
