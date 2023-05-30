@@ -2,11 +2,15 @@
 
 ### forRootAsync
 
-NestJS 에서 TypeORM 사용을 위해 NestJS 자체에서 TypeOrmModule 을 제공한다. DB 연결도 TypeOrmModule 의 메소드를 이용해서 할 수 있다. 
+NestJS 에서 TypeORM 사용을 위해 NestJS 자체에서 TypeOrmModule 을 제공한다. DB 연결도 TypeOrmModule 의 메소드를 이용해서 할 수 있다. DB 연결을 하는 방법으로 두 가지가 있다. 
+
+첫번째는 app.module.ts 에 TypeOrmModule 의 forRoot 메소드를 이용해서 선언하는 방법이다. 
+
+두번째는 DB 연결을 위한 별도 module 을 만들고 이를 app.module.ts 에서 TypeOrmModule 의 forRootAsync 메소드를 통해 이 module 을 불러오는 방법이 있다.
 
 <br>
 
-TypeOrmModule 의 forRoot 메소드가 동기적인 방법으로 DB 연결을 수행한다면 forRootAsync 메소드는 비동기적으로 DB 연결을 수행할 수 있다.
+TypeOrmModule 의 forRoot 메소드가 동기적인 방법으로 DB 연결을 수행한다면 forRootAsync 메소드는 비동기적으로 DB 연결을 수행한다.
 
 forRoot
 
@@ -17,6 +21,12 @@ forRoot
 forRootAsync
 
 > You may want to pass your repository module options asynchronously instead of statically. In this case, use the `forRootAsync()` method, which provides several ways to deal with async configuration.
+
+<br>
+
+forRootAsync 는 모듈을 불러오는 방식이라 비동기적으로 동작한다. 프레임워크는 컴파일때 사용자가 선언한 모듈들이 무엇이고 이 모듈들의 의존성을 파악할 수 없다. 런타임때 모듈의 종류와 모듈간의 의존성을 파악할 수 있어서 비동기적으로 동작한다.
+
+[NestJS 가 의존성을 주입하는 내부 동작 방식](https://velog.io/@coalery/nest-injection-how)은 아직 제대로 파악하지 못해서 추가 학습이 필요하다.
 
 <br>
 
@@ -150,8 +160,6 @@ export interface TypeOrmModuleAsyncOptions
 
 ```
 
-
-
 <br>
 
 <참고>
@@ -159,3 +167,5 @@ export interface TypeOrmModuleAsyncOptions
 https://docs.nestjs.com/techniques/database
 
 https://docs.nestjs.com/techniques/database#async-configuration
+
+https://velog.io/@coalery/nest-injection-how
