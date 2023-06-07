@@ -164,6 +164,8 @@ export interface TypeOrmModuleAsyncOptions
 
 <참고>
 
+https://jojoldu.tistory.com/579
+
 https://docs.nestjs.com/techniques/database
 
 https://docs.nestjs.com/techniques/database#async-configuration
