@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmOptionsFactory } from '@nestjs/typeorm';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm/dist';
-import { Board } from 'src/entities/board.entity';
+import { Board } from '../entities/board.entity';
 
 @Injectable()
 export class DbConfigService implements TypeOrmOptionsFactory {
