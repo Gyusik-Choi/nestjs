@@ -4,5 +4,5 @@ import { PageRequest } from "../../common/interfaces/page-request";
 export class BoardSearchRequestDTO extends PageRequest {
   @IsNumber()
   @IsOptional()
-  idx: number = 0;
+  idx: number;
 }
