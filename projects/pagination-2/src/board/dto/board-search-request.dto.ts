@@ -1,8 +1,8 @@
 import { IsNumber, IsOptional } from "class-validator";
-import { PageRequest } from "../../common/interfaces/page-request";
+import { PageRequest } from "src/common/interfaces/page-request";
 
 export class BoardSearchRequestDTO extends PageRequest {
-  @IsNumber()
   @IsOptional()
+  @IsNumber()
   idx: number;
 }
