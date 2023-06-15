@@ -162,9 +162,21 @@ export interface TypeOrmModuleAsyncOptions
 
 <br>
 
+### no offset
+
+pagination-1 에서는 offset 과 limit 을 활용해서 paging 을 처리했다면 이번에는 offset 없이 limit 과 PK 를 이용해서 paging 을 처리했다. 
+
+offset 의 경우 offset 의 크기 만큼 데이터를 추가적으로 읽어야 해서 이를 보다 빠르게 처리하기 위해 offset 을 사용하지 않는 방식을 사용했다. PK 의 경우 클러스터 인덱스가 돼서 PK 순서대로 데이터 페이지 자체가 정렬된다. 그래서 인덱스를 조회해서 대상 PK 를 빠르게 찾을 수 있다.
+
+paging 응답을 할때 다음으로 조회할 idx 번호를 알려준다. 추후 요청을 받으면 이 idx 보다 작거나 같은 idx 를 기준으로 조회한다.
+
+<br>
+
 <참고>
 
 https://jojoldu.tistory.com/579
+
+https://jojoldu.tistory.com/528
 
 https://docs.nestjs.com/techniques/database
 
