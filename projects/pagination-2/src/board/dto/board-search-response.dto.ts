@@ -1,6 +1,6 @@
 import { Board } from "../../entities/board.entity";
 
-export class BoardSearchReseponse {
+export class BoardSearchReseponseDTO {
   idx: number;
   title: string;
   content: string;
