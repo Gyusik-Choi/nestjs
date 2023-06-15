@@ -9,6 +9,6 @@ export class BoardService {
   ) {}
 
   async search(req: BoardSearchRequestDTO) {
-    return await this.boardRepository.paging(req.idx, req.pageLimit);
+    return await this.boardRepository.paging(req.pageLimit, req.idx);
   }
 }
