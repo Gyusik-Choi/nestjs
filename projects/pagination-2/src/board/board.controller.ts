@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { BoardService } from './board.service';
 import { BoardSearchRequestDTO } from './dto/board-search-request.dto';
 
@@ -11,7 +11,7 @@ export class BoardController {
   @Get('search')
   @UsePipes(new ValidationPipe({ transform: true }))
   async search(
-    @Param() req: BoardSearchRequestDTO,
+    @Query() req: BoardSearchRequestDTO,
   ) {
     return await this.boardService.search(req);
   }
