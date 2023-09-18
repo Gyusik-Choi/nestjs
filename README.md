@@ -1,2 +1,3 @@
-# TypeScript
+# NestJS
 
+작은 프로젝트들을 하면서 NestJS 를 학습한 내용을 올리는 곳입니다.
